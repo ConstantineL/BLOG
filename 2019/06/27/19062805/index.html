@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="ionic,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="ionic2常见问题及解决方案一、app启动白屏的问题​         app启动后大概有几秒的白屏，才会显示首页。解决方法有前辈放了，这边贴个链接解决方法。 二、gradle下载失败导致执行打包命令时报错​    ionic build android 是通过gradle编译，而且会在线下载gradle，墙内基本是下不了的，这就需要手动下载项目需要的gradle版本。 查看android pl">
+<meta name="keywords" content="ionic">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ionic2常见问题及解决方案">
+<meta property="og:url" content="https://constantinel.github.io/2019/06/27/19062805/index.html">
+<meta property="og:site_name" content="蜀城走马的个人空间">
+<meta property="og:description" content="ionic2常见问题及解决方案一、app启动白屏的问题​         app启动后大概有几秒的白屏，才会显示首页。解决方法有前辈放了，这边贴个链接解决方法。 二、gradle下载失败导致执行打包命令时报错​    ionic build android 是通过gradle编译，而且会在线下载gradle，墙内基本是下不了的，这就需要手动下载项目需要的gradle版本。 查看android pl">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-06-28T09:14:58.265Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ionic2常见问题及解决方案">
+<meta name="twitter:description" content="ionic2常见问题及解决方案一、app启动白屏的问题​         app启动后大概有几秒的白屏，才会显示首页。解决方法有前辈放了，这边贴个链接解决方法。 二、gradle下载失败导致执行打包命令时报错​    ionic build android 是通过gradle编译，而且会在线下载gradle，墙内基本是下不了的，这就需要手动下载项目需要的gradle版本。 查看android pl">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://constantinel.github.io/2019/06/27/19062805/">
+
+
+
+
+
+  <title>ionic2常见问题及解决方案 | 蜀城走马的个人空间</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">蜀城走马的个人空间</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-历史文章">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            历史文章
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://constantinel.github.io/2019/06/27/19062805/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content>
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="蜀城走马的个人空间">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ionic2常见问题及解决方案</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-27T16:57:50+08:00">
+                2019-06-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="ionic2常见问题及解决方案"><a href="#ionic2常见问题及解决方案" class="headerlink" title="ionic2常见问题及解决方案"></a>ionic2常见问题及解决方案</h1><h3 id="一、app启动白屏的问题"><a href="#一、app启动白屏的问题" class="headerlink" title="一、app启动白屏的问题"></a>一、app启动白屏的问题</h3><p>​         app启动后大概有几秒的白屏，才会显示首页。解决方法有前辈放了，这边贴个链接<a href="http://www.cnblogs.com/Ave-Maria/p/6277389.html" target="_blank" rel="noopener">解决方法</a>。</p>
+<h3 id="二、gradle下载失败导致执行打包命令时报错"><a href="#二、gradle下载失败导致执行打包命令时报错" class="headerlink" title="二、gradle下载失败导致执行打包命令时报错"></a>二、gradle下载失败导致执行打包命令时报错</h3><p>​    <code>ionic build android</code> 是通过gradle编译，而且会在线下载gradle，墙内基本是下不了的，这就需要手动下载项目需要的gradle版本。 查看android platform下的build.gradle文件，看当前版本需要的gradle version。 下载成功后，放在<code>myApp\platforms\android\gradle</code>文件夹下， 命令行输入<code>set CORDOVA_ANDROID_GRADLE_DISTRIBUTION_URL=../gradle-2.14.1-all.zip</code>(参考自简书作者：charles0427链接：<a href="http://www.jianshu.com/p/408254d76e74" target="_blank" rel="noopener">http://www.jianshu.com/p/408254d76e74</a>)</p>
+<h3 id="三、ionic2中扩展自定义图标"><a href="#三、ionic2中扩展自定义图标" class="headerlink" title="三、ionic2中扩展自定义图标"></a>三、ionic2中扩展自定义图标</h3><p>​    ionic2开发app的实际使用中，ionic2官方的图标是不够用的，流行常用的图标都可以在阿里巴巴矢量图标中找到。需要扩展图标<code>&lt;ion-icon name=&quot;my-icon&quot;&gt;&lt;/ion-icon&gt;</code>来使用，这里有详细的解决办法，亲身实践后可以完美的使用(<a href="http://blog.csdn.net/u010730897/article/details/53906285?utm_source=itdadao&utm_medium=referral" target="_blank" rel="noopener">详情请点击</a>)。</p>
+<h3 id="四、ionic2自定义处理返回按钮"><a href="#四、ionic2自定义处理返回按钮" class="headerlink" title="四、ionic2自定义处理返回按钮"></a>四、ionic2自定义处理返回按钮</h3><p>​    APP开发过程中，有时需要自定义处理返回按钮的行为。一种方法是使用<code>hideBackButton=&quot;true&quot;</code>隐藏app页面上自带返回按钮，然后自写返回按钮控制点击事件。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ion-header</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">ion-navbar</span> <span class="attr">hideBackButton</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ion-buttons</span> <span class="attr">left</span> (<span class="attr">click</span>)=<span class="string">"selfGoBack()"</span> &gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">button</span> <span class="attr">ion-button</span> <span class="attr">icon-only</span> <span class="attr">class</span>=<span class="string">"selfBack"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ion-icon</span> <span class="attr">name</span>=<span class="string">"selfBack"</span>&gt;</span><span class="tag">&lt;/<span class="name">ion-icon</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">ion-buttons</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">ion-navbar</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ion-header</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>​    但是，上述方法并不能控制安卓手机实体返回按键。这时，就需要下列方法来处理页面的返回了：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//注册返回按键事件</span></span><br><span class="line">      <span class="keyword">this</span>.platform.registerBackButtonAction((): <span class="function"><span class="params">any</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> activeVC = <span class="keyword">this</span>.nav.getActive();</span><br><span class="line">        <span class="keyword">let</span> page = activeVC.instance;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (activeVC.component.name == <span class="string">'HomeComponent'</span>) &#123;</span><br><span class="line">          <span class="keyword">this</span>.platform.exitApp();</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;, <span class="number">101</span>);</span><br></pre></td></tr></table></figure>
+
+<p>​    上述方法中，需要在app.component.ts文件中注册返回按键事件。在我的实际使用中，我整个项目中有一个HomeComponent组件，也是我的首页。我需要在当前激活页面时，点击返回就退出app。判断条件我是根据取到activeVc上面的组件名，使用使用中根据自己的需要可以使用更多的参数或值。参数中的值101定义的是返回键行为的优先级，详情可<a href="http://blog.csdn.net/tiramisu_ljh/article/details/53100959" target="_blank" rel="noopener">点击此处了解</a>。</p>
+<h3 id="五、开发安卓版app时，搜索成功页面未刷新"><a href="#五、开发安卓版app时，搜索成功页面未刷新" class="headerlink" title="五、开发安卓版app时，搜索成功页面未刷新"></a>五、开发安卓版app时，搜索成功页面未刷新</h3><p>​    实际应用场景是我做了一个可实时搜索的列表页面，用于选择模态框。HTML代码如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ion-header</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">ion-navbar</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ion-title</span>&gt;</span>选择&#123;&#123;title&#125;&#125;<span class="tag">&lt;/<span class="name">ion-title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ion-buttons</span> <span class="attr">left</span> (<span class="attr">click</span>)=<span class="string">"closeModal()"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">button</span> <span class="attr">ion-button</span> <span class="attr">icon-only</span> <span class="attr">clear</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ion-icon</span> <span class="attr">name</span>=<span class="string">"md-arrow-back"</span>&gt;</span><span class="tag">&lt;/<span class="name">ion-icon</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">ion-buttons</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">ion-navbar</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ion-header</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">ion-content</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- &lt;ion-refresher *ngIf="hasMore" (ionRefresh)="getData($event)"&gt;</span></span><br><span class="line"><span class="comment">    &lt;ion-refresher-content&gt;&lt;/ion-refresher-content&gt;</span></span><br><span class="line"><span class="comment">  &lt;/ion-refresher&gt; --&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">ion-list</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ion-item-group</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">ion-item-divider</span> <span class="attr">color</span>=<span class="string">"light"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ion-searchbar</span></span></span><br><span class="line"><span class="tag">          <span class="attr">placeholder</span>=<span class="string">"搜索名称"</span></span></span><br><span class="line"><span class="tag">          [(<span class="attr">ngModel</span>)]=<span class="string">"keyword"</span></span></span><br><span class="line"><span class="tag">          (<span class="attr">ionInput</span>)=<span class="string">"onInput($event)"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">ion-searchbar</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">ion-item-divider</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">ion-item</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ion-row</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">ion-col</span> <span class="attr">width-33</span>&gt;</span>编号<span class="tag">&lt;/<span class="name">ion-col</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">ion-col</span> <span class="attr">width-67</span>&gt;</span>&#123;&#123;title&#125;&#125;名称<span class="tag">&lt;/<span class="name">ion-col</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">ion-row</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">ion-item</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">ion-item</span> *<span class="attr">ngFor</span>=<span class="string">"let item of ableSelected"</span> (<span class="attr">click</span>)=<span class="string">"chooseItem(item)"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ion-row</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">ion-col</span> <span class="attr">width-33</span>&gt;</span>&#123;&#123;item.id&#125;&#125;<span class="tag">&lt;/<span class="name">ion-col</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">ion-col</span> <span class="attr">width-67</span>&gt;</span>&#123;&#123;item.name&#125;&#125;<span class="tag">&lt;/<span class="name">ion-col</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">ion-row</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">ion-item</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">ion-item-group</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">ion-list</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">ion-infinite-scroll</span> (<span class="attr">ionInfinite</span>)=<span class="string">"getData($event)"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">ion-infinite-scroll-content</span> <span class="attr">loadingSpinner</span>=<span class="string">"bubbles"</span></span></span><br><span class="line"><span class="tag">      <span class="attr">loadingText</span>=<span class="string">"加载中 ..."</span>&gt;</span><span class="tag">&lt;/<span class="name">ion-infinite-scroll-content</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">ion-infinite-scroll</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ion-content</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>​    该页面用于选择数据，当前页面有实时搜索数据和上拉刷新加载更多数据的功能，都是通过getData调用请求异步获取。问题点在于执行<code>ionic serve</code>在浏览器测试的时候，搜索功能很完美，但是在真机上测试时，输入文字进行名称筛选数据，请求成功展示数据更新，页面展示的列表缓存住，并未刷新页面。困扰了很久，最后找到方法。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123;ChangeDetectorRef&#125; <span class="keyword">from</span> <span class="string">'@angular/core'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">SelectModalComponent</span>()</span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(public changeDetectorRef: ChangeDetectorRef) &#123;</span><br><span class="line">    </span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  getData()&#123;</span><br><span class="line">    <span class="comment">// 在数据更新后调用，更新页面防止页面缓存</span></span><br><span class="line">  	<span class="keyword">this</span>.changeDetectorRef.detectChanges();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    在异步请求获取数据成功后，调用ChangeDetectorRef的detectChanges方法，可以解决页面缓存的问题。</p>
+<h3 id="六、iOS端开发使用wkwebview替换uiwebview优化app性能"><a href="#六、iOS端开发使用wkwebview替换uiwebview优化app性能" class="headerlink" title="六、iOS端开发使用wkwebview替换uiwebview优化app性能"></a>六、iOS端开发使用wkwebview替换uiwebview优化app性能</h3><p>​    适用ionic2开发ios端app的实际过程中，由于uiwebview浏览器技术极大的占用内存，会存在很多导致应用崩溃的情况。例如拍照保存在本地，写了一个查看已拍照图片的页面，图片一多进去页面就导致应用崩溃闪退。还有就是数据量大的列表，滑动浏览非常不流畅卡顿。通过使用wkwebview插件替换uiwebview的使用，亲测在app使用中性能提高不是一点半点，崩溃率也大大降低。详细请<a href="http://blog.csdn.net/mygrilzhuyulin/article/details/52689634" target="_blank" rel="noopener">点击此处查看</a></p>
+<p>​    但是，上述方案有一个遗留问题，就是wkwebview技术实际是使用谷歌webkit的内核，在ios上会有取不到本地沙盒文件的bug。如果在app中使用img标签的方式，展示设备本地图片的话无法展示。我们在项目中的解决方案是写了一个调用原生设备展示图片的插件，，，真是大写的尴尬<del>~</del></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ionic/" rel="tag"># ionic</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/26/first/" rel="next" title="前言">
+                <i class="fa fa-chevron-left"></i> 前言
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/28/19062801/" rel="prev" title="VUE的某些常见问题及解决方法">
+                VUE的某些常见问题及解决方法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description">在时光的雕刻下，人被凿去虚妄，磨出温润...</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ionic2常见问题及解决方案"><span class="nav-number">1.</span> <span class="nav-text">ionic2常见问题及解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、app启动白屏的问题"><span class="nav-number">1.0.1.</span> <span class="nav-text">一、app启动白屏的问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、gradle下载失败导致执行打包命令时报错"><span class="nav-number">1.0.2.</span> <span class="nav-text">二、gradle下载失败导致执行打包命令时报错</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、ionic2中扩展自定义图标"><span class="nav-number">1.0.3.</span> <span class="nav-text">三、ionic2中扩展自定义图标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#四、ionic2自定义处理返回按钮"><span class="nav-number">1.0.4.</span> <span class="nav-text">四、ionic2自定义处理返回按钮</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#五、开发安卓版app时，搜索成功页面未刷新"><span class="nav-number">1.0.5.</span> <span class="nav-text">五、开发安卓版app时，搜索成功页面未刷新</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#六、iOS端开发使用wkwebview替换uiwebview优化app性能"><span class="nav-number">1.0.6.</span> <span class="nav-text">六、iOS端开发使用wkwebview替换uiwebview优化app性能</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

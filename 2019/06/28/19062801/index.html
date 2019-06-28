@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Vue,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="VUE的某些常见问题及解决方法双向绑定数据，界面未渲染？最近做vue项目的过程中，经常碰到会有双向绑定数据，data中定义的数据进行变动时，页面实际展示层未改变。常见的应用场景有下面几种：  form表单里面，修改表单的时候，分明预置了数据，但是没有显示  element-ui常用的select组件，下拉选择了一个元素，但是选中框中并没有显示 自己写选中切换的组件，点击后触发active的样式，触">
+<meta name="keywords" content="Vue">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VUE的某些常见问题及解决方法">
+<meta property="og:url" content="https://constantinel.github.io/2019/06/28/19062801/index.html">
+<meta property="og:site_name" content="蜀城走马的个人空间">
+<meta property="og:description" content="VUE的某些常见问题及解决方法双向绑定数据，界面未渲染？最近做vue项目的过程中，经常碰到会有双向绑定数据，data中定义的数据进行变动时，页面实际展示层未改变。常见的应用场景有下面几种：  form表单里面，修改表单的时候，分明预置了数据，但是没有显示  element-ui常用的select组件，下拉选择了一个元素，但是选中框中并没有显示 自己写选中切换的组件，点击后触发active的样式，触">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-06-28T08:30:18.071Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="VUE的某些常见问题及解决方法">
+<meta name="twitter:description" content="VUE的某些常见问题及解决方法双向绑定数据，界面未渲染？最近做vue项目的过程中，经常碰到会有双向绑定数据，data中定义的数据进行变动时，页面实际展示层未改变。常见的应用场景有下面几种：  form表单里面，修改表单的时候，分明预置了数据，但是没有显示  element-ui常用的select组件，下拉选择了一个元素，但是选中框中并没有显示 自己写选中切换的组件，点击后触发active的样式，触">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://constantinel.github.io/2019/06/28/19062801/">
+
+
+
+
+
+  <title>VUE的某些常见问题及解决方法 | 蜀城走马的个人空间</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">蜀城走马的个人空间</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-历史文章">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            历史文章
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://constantinel.github.io/2019/06/28/19062801/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content>
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="蜀城走马的个人空间">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">VUE的某些常见问题及解决方法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-28T16:18:01+08:00">
+                2019-06-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="VUE的某些常见问题及解决方法"><a href="#VUE的某些常见问题及解决方法" class="headerlink" title="VUE的某些常见问题及解决方法"></a>VUE的某些常见问题及解决方法</h1><h2 id="双向绑定数据，界面未渲染？"><a href="#双向绑定数据，界面未渲染？" class="headerlink" title="双向绑定数据，界面未渲染？"></a>双向绑定数据，界面未渲染？</h2><p>最近做vue项目的过程中，经常碰到会有双向绑定数据，data中定义的数据进行变动时，页面实际展示层未改变。常见的应用场景有下面几种：</p>
+<ol>
+<li>form表单里面，修改表单的时候，分明预置了数据，但是没有显示 </li>
+<li>element-ui常用的select组件，下拉选择了一个元素，但是选中框中并没有显示</li>
+<li>自己写选中切换的组件，点击后触发active的样式，触发的字段为checked，但是checked分明自己已经改变了值，样式就是没有改变</li>
+</ol>
+<p>上诉几种情况，实际原因都是vue的双向绑定机制，对于对象的定义，对应的字段必须预先定义，否则无法触发vue的监听机制。由于我之前使用angular框架，自然养成了习惯就是对表单数据保存，会直接用<code>formData:{}</code> 但是这在vue中是行不通的。</p>
+<p>如果表单中有例如名称、电话号码两个字段，必须声明<code>formData:{name:&#39;&#39;,tel:&#39;&#39;}</code> 这才是vue中的data正常的声明定义方式。所以上诉问题点1、2都是该问题造成的。</p>
+<p>上诉情况三，我们一般进行代码书写方式会如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取预定义数据</span></span><br><span class="line"><span class="keyword">let</span> arr = [&#123;<span class="attr">id</span>:<span class="number">1</span>,<span class="attr">name</span>:<span class="string">'选项一'</span>&#125;,&#123;<span class="attr">id</span>:<span class="number">2</span>,<span class="attr">name</span>:<span class="string">'选项二'</span>&#125;];</span><br><span class="line"><span class="comment">// 默认选中第一个</span></span><br><span class="line">arr[<span class="number">0</span>].checked = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 选中项的函数</span></span><br><span class="line">clickItem(data)&#123;</span><br><span class="line">  <span class="comment">// 取消其他所有项的选中状态，选中当前项</span></span><br><span class="line">  arr.forEach(<span class="function"><span class="params">item</span>=&gt;</span>&#123;</span><br><span class="line">    item.checked = <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">if</span>(data.id === item.id)&#123;</span><br><span class="line">      item.checked = <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述方式就会造成，进行点击选中项切换时，由于arr里面的不是每一项都有checked字段，造成数据变动时，界面渲染未改变的情况。处理方法也很简单，对arr数组数据进行处理，保证初始化时都有checked字段就行了。</p>
+<p>所以，一定不要偷懒，遵照官方规范进行开发，哈哈<del>~</del></p>
+<h2 id="使用element-ui的弹窗组件，第三方地图、图表没有正常显示"><a href="#使用element-ui的弹窗组件，第三方地图、图表没有正常显示" class="headerlink" title="使用element-ui的弹窗组件，第三方地图、图表没有正常显示"></a>使用element-ui的弹窗组件，第三方地图、图表没有正常显示</h2><p>实际项目中，很多时候会用到在弹窗里面实现一些操作dom的功能，比如常见的弹窗里面进行地图选点，或者在弹窗中进行echarts的图表渲染。如果你使用element-ui的情况下，你会发现为什么第一次打开弹窗的时候想要的地图或者图表并没有渲染出来？</p>
+<p>实际你看了element的源码就知道了，它对el-dialog弹窗组件进行封装的时候，组件模板的这一行代码<code>&lt;div class=&quot;el-dialog__body&quot; v-if=&quot;rendered&quot;&gt;&lt;slot&gt;&lt;/slot&gt;&lt;/div&gt;</code> 弹窗内容渲染条件用的是v-if，v-if和v-show的区别大家应该都了解，就不赘述了（实在不知道百度<del>~</del>），v-if为false的时候，dom并不会实际存在，当你使用document.getElementById()去查找弹窗体的用于展示地图、图表的dom元素也是获取不到的。</p>
+<p>那么问题找到了，怎么解决？自己写要保持样式一致，浪费开发效率，最简单的方法就是将element-ui源码的dialog组件代码，在自己的项目中写一个自定义组件，将v-if改成v-show就行了。下面是我自己修改的代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;transition name=<span class="string">"dialog-fade"</span>&gt;</span><br><span class="line">        &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"el-dialog__wrapper"</span> v-show=<span class="string">"visible"</span> @click.self=<span class="string">"handleWrapperClick"</span>&gt;</span><br><span class="line">            &lt;div</span><br><span class="line">                    <span class="class"><span class="keyword">class</span></span>=<span class="string">"el-dialog"</span></span><br><span class="line">                    :<span class="class"><span class="keyword">class</span></span>=<span class="string">"[&#123; 'is-fullscreen': fullscreen, 'el-dialog--center': center &#125;, customClass]"</span></span><br><span class="line">                    ref=<span class="string">"dialog"</span></span><br><span class="line">                    :style=<span class="string">"style"</span>&gt;</span><br><span class="line">                &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"el-dialog__header"</span>&gt;</span><br><span class="line">                    &lt;slot name=<span class="string">"title"</span>&gt;</span><br><span class="line">                        &lt;span <span class="class"><span class="keyword">class</span></span>=<span class="string">"el-dialog__title"</span>&gt;&#123;&#123; title &#125;&#125;&lt;<span class="regexp">/span&gt;</span></span><br><span class="line"><span class="regexp">                    &lt;/</span>slot&gt;</span><br><span class="line">                    &lt;button</span><br><span class="line">                            type=<span class="string">"button"</span></span><br><span class="line">                            <span class="class"><span class="keyword">class</span></span>=<span class="string">"el-dialog__headerbtn"</span></span><br><span class="line">                            aria-label=<span class="string">"Close"</span></span><br><span class="line">                            v-<span class="keyword">if</span>=<span class="string">"showClose"</span></span><br><span class="line">                            @click=<span class="string">"handleClose"</span>&gt;</span><br><span class="line">                        &lt;i <span class="class"><span class="keyword">class</span></span>=<span class="string">"el-dialog__close el-icon el-icon-close"</span>&gt;<span class="xml"><span class="tag">&lt;/<span class="name">i</span>&gt;</span></span></span><br><span class="line">                    &lt;<span class="regexp">/button&gt;</span></span><br><span class="line"><span class="regexp">                &lt;/</span>div&gt;</span><br><span class="line">                &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"el-dialog__body"</span> v-show=<span class="string">"rendered"</span>&gt;<span class="xml"><span class="tag">&lt;<span class="name">slot</span>&gt;</span><span class="tag">&lt;/<span class="name">slot</span>&gt;</span></span><span class="xml"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">                &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"el-dialog__footer"</span> v-show=<span class="string">"$slots.footer"</span>&gt;</span><br><span class="line">                    &lt;slot name=<span class="string">"footer"</span>&gt;<span class="xml"><span class="tag">&lt;/<span class="name">slot</span>&gt;</span></span></span><br><span class="line">                &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">            &lt;/</span>div&gt;</span><br><span class="line">        &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">    &lt;/</span>transition&gt;</span><br><span class="line">&lt;<span class="regexp">/template&gt;</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">&lt;script&gt;</span></span><br><span class="line"><span class="regexp">    import Popup from 'element-ui/</span>src/utils/popup<span class="string">';</span></span><br><span class="line"><span class="string">    import Migrating from '</span>element-ui/src/mixins/migrating<span class="string">';</span></span><br><span class="line"><span class="string">    import emitter from '</span>element-ui/src/mixins/emitter<span class="string">';</span></span><br><span class="line"><span class="string">    export default &#123;</span></span><br><span class="line"><span class="string">        name: '</span>SelfDialog<span class="string">',</span></span><br><span class="line"><span class="string">        mixins: [Popup, emitter, Migrating],</span></span><br><span class="line"><span class="string">        props: &#123;</span></span><br><span class="line"><span class="string">            title: &#123;</span></span><br><span class="line"><span class="string">                type: String,</span></span><br><span class="line"><span class="string">                default: '</span><span class="string">'</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            modal: &#123;</span></span><br><span class="line"><span class="string">                type: Boolean,</span></span><br><span class="line"><span class="string">                default: true</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            modalAppendToBody: &#123;</span></span><br><span class="line"><span class="string">                type: Boolean,</span></span><br><span class="line"><span class="string">                default: true</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            appendToBody: &#123;</span></span><br><span class="line"><span class="string">                type: Boolean,</span></span><br><span class="line"><span class="string">                default: false</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            lockScroll: &#123;</span></span><br><span class="line"><span class="string">                type: Boolean,</span></span><br><span class="line"><span class="string">                default: true</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            closeOnClickModal: &#123;</span></span><br><span class="line"><span class="string">                type: Boolean,</span></span><br><span class="line"><span class="string">                default: true</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            closeOnPressEscape: &#123;</span></span><br><span class="line"><span class="string">                type: Boolean,</span></span><br><span class="line"><span class="string">                default: true</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            showClose: &#123;</span></span><br><span class="line"><span class="string">                type: Boolean,</span></span><br><span class="line"><span class="string">                default: true</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            width: String,</span></span><br><span class="line"><span class="string">            fullscreen: Boolean,</span></span><br><span class="line"><span class="string">            customClass: &#123;</span></span><br><span class="line"><span class="string">                type: String,</span></span><br><span class="line"><span class="string">                default: '</span><span class="string">'</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            top: &#123;</span></span><br><span class="line"><span class="string">                type: String,</span></span><br><span class="line"><span class="string">                default: '</span><span class="number">15</span>vh<span class="string">'</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            beforeClose: Function,</span></span><br><span class="line"><span class="string">            center: &#123;</span></span><br><span class="line"><span class="string">                type: Boolean,</span></span><br><span class="line"><span class="string">                default: false</span></span><br><span class="line"><span class="string">            &#125;</span></span><br><span class="line"><span class="string">        &#125;,</span></span><br><span class="line"><span class="string">        data() &#123;</span></span><br><span class="line"><span class="string">            return &#123;</span></span><br><span class="line"><span class="string">                closed: false</span></span><br><span class="line"><span class="string">            &#125;;</span></span><br><span class="line"><span class="string">        &#125;,</span></span><br><span class="line"><span class="string">        watch: &#123;</span></span><br><span class="line"><span class="string">            visible(val) &#123;</span></span><br><span class="line"><span class="string">                if (val) &#123;</span></span><br><span class="line"><span class="string">                    this.closed = false;</span></span><br><span class="line"><span class="string">                    this.$emit('</span>open<span class="string">');</span></span><br><span class="line"><span class="string">                    this.$el.addEventListener('</span>scroll<span class="string">', this.updatePopper);</span></span><br><span class="line"><span class="string">                    this.$nextTick(() =&gt; &#123;</span></span><br><span class="line"><span class="string">                        this.$refs.dialog.scrollTop = 0;</span></span><br><span class="line"><span class="string">                    &#125;);</span></span><br><span class="line"><span class="string">                    if (this.appendToBody) &#123;</span></span><br><span class="line"><span class="string">                        document.body.appendChild(this.$el);</span></span><br><span class="line"><span class="string">                    &#125;</span></span><br><span class="line"><span class="string">                &#125; else &#123;</span></span><br><span class="line"><span class="string">                    this.$el.removeEventListener('</span>scroll<span class="string">', this.updatePopper);</span></span><br><span class="line"><span class="string">                    if (!this.closed) this.$emit('</span>close<span class="string">');</span></span><br><span class="line"><span class="string">                &#125;</span></span><br><span class="line"><span class="string">            &#125;</span></span><br><span class="line"><span class="string">        &#125;,</span></span><br><span class="line"><span class="string">        computed: &#123;</span></span><br><span class="line"><span class="string">            style() &#123;</span></span><br><span class="line"><span class="string">                let style = &#123;&#125;;</span></span><br><span class="line"><span class="string">                if (this.width) &#123;</span></span><br><span class="line"><span class="string">                    style.width = this.width;</span></span><br><span class="line"><span class="string">                &#125;</span></span><br><span class="line"><span class="string">                if (!this.fullscreen) &#123;</span></span><br><span class="line"><span class="string">                    style.marginTop = this.top;</span></span><br><span class="line"><span class="string">                &#125;</span></span><br><span class="line"><span class="string">                return style;</span></span><br><span class="line"><span class="string">            &#125;</span></span><br><span class="line"><span class="string">        &#125;,</span></span><br><span class="line"><span class="string">        methods: &#123;</span></span><br><span class="line"><span class="string">            getMigratingConfig() &#123;</span></span><br><span class="line"><span class="string">                return &#123;</span></span><br><span class="line"><span class="string">                    props: &#123;</span></span><br><span class="line"><span class="string">                        '</span>size<span class="string">': '</span>size is removed.<span class="string">'</span></span><br><span class="line"><span class="string">                    &#125;</span></span><br><span class="line"><span class="string">                &#125;;</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            handleWrapperClick() &#123;</span></span><br><span class="line"><span class="string">                if (!this.closeOnClickModal) return;</span></span><br><span class="line"><span class="string">                this.handleClose();</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            handleClose() &#123;</span></span><br><span class="line"><span class="string">                if (typeof this.beforeClose === '</span><span class="function"><span class="keyword">function</span>') </span>&#123;</span><br><span class="line">                    <span class="keyword">this</span>.beforeClose(<span class="keyword">this</span>.hide);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">this</span>.hide();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;,</span><br><span class="line">            hide(cancel) &#123;</span><br><span class="line">                <span class="keyword">if</span> (cancel !== <span class="literal">false</span>) &#123;</span><br><span class="line">                    <span class="keyword">this</span>.$emit(<span class="string">'update:visible'</span>, <span class="literal">false</span>);</span><br><span class="line">                    <span class="keyword">this</span>.$emit(<span class="string">'close'</span>);</span><br><span class="line">                    <span class="keyword">this</span>.closed = <span class="literal">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;,</span><br><span class="line">            updatePopper() &#123;</span><br><span class="line">                <span class="keyword">this</span>.broadcast(<span class="string">'ElSelectDropdown'</span>, <span class="string">'updatePopper'</span>);</span><br><span class="line">                <span class="keyword">this</span>.broadcast(<span class="string">'ElDropdownMenu'</span>, <span class="string">'updatePopper'</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        mounted() &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">this</span>.visible) &#123;</span><br><span class="line">                <span class="keyword">this</span>.rendered = <span class="literal">true</span>;</span><br><span class="line">                <span class="keyword">this</span>.open();</span><br><span class="line">                <span class="keyword">if</span> (<span class="keyword">this</span>.appendToBody) &#123;</span><br><span class="line">                    <span class="built_in">document</span>.body.appendChild(<span class="keyword">this</span>.$el);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        destroyed() &#123;</span><br><span class="line">            <span class="comment">// if appendToBody is true, remove DOM node after destroy</span></span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">this</span>.appendToBody &amp;&amp; <span class="keyword">this</span>.$el &amp;&amp; <span class="keyword">this</span>.$el.parentNode) &#123;</span><br><span class="line">                <span class="keyword">this</span>.$el.parentNode.removeChild(<span class="keyword">this</span>.$el);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>把组件名自定义，我改的是SelfDialog，是不是很简单？</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Vue/" rel="tag"># Vue</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/27/19062805/" rel="next" title="ionic2常见问题及解决方案">
+                <i class="fa fa-chevron-left"></i> ionic2常见问题及解决方案
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/28/19062802/" rel="prev" title="VUE通用指令、过滤器的封装和使用">
+                VUE通用指令、过滤器的封装和使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description">在时光的雕刻下，人被凿去虚妄，磨出温润...</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#VUE的某些常见问题及解决方法"><span class="nav-number">1.</span> <span class="nav-text">VUE的某些常见问题及解决方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#双向绑定数据，界面未渲染？"><span class="nav-number">1.1.</span> <span class="nav-text">双向绑定数据，界面未渲染？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用element-ui的弹窗组件，第三方地图、图表没有正常显示"><span class="nav-number">1.2.</span> <span class="nav-text">使用element-ui的弹窗组件，第三方地图、图表没有正常显示</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

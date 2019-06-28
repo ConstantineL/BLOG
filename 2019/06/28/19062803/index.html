@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="vue element,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="说明：最近几个月负责公司部门vue项目的前端架构任务，该组件的设计实现，主要考虑提高业务开发效率，实现表格的动态化配置，对项目中常见的业务页面，能以较少的代码量，通过简单的json配置实现表格和表单的渲染，实现代码的开发任务。要点有三：1、表格的动态化配置，动态展现表格内容、配置化显示操作按钮，可扩展操作按钮并提供表格中自定义列模板，使用vue的render原理实现。使用到组件BaseCrud2、">
+<meta name="keywords" content="vue element">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用element封装动态配置表格">
+<meta property="og:url" content="https://constantinel.github.io/2019/06/28/19062803/index.html">
+<meta property="og:site_name" content="蜀城走马的个人空间">
+<meta property="og:description" content="说明：最近几个月负责公司部门vue项目的前端架构任务，该组件的设计实现，主要考虑提高业务开发效率，实现表格的动态化配置，对项目中常见的业务页面，能以较少的代码量，通过简单的json配置实现表格和表单的渲染，实现代码的开发任务。要点有三：1、表格的动态化配置，动态展现表格内容、配置化显示操作按钮，可扩展操作按钮并提供表格中自定义列模板，使用vue的render原理实现。使用到组件BaseCrud2、">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4693648-ce67eddc06f7bf6d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4693648-654e6f6e35d9cbc0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4693648-35baf5433f777bc6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2019-06-28T09:01:38.793Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用element封装动态配置表格">
+<meta name="twitter:description" content="说明：最近几个月负责公司部门vue项目的前端架构任务，该组件的设计实现，主要考虑提高业务开发效率，实现表格的动态化配置，对项目中常见的业务页面，能以较少的代码量，通过简单的json配置实现表格和表单的渲染，实现代码的开发任务。要点有三：1、表格的动态化配置，动态展现表格内容、配置化显示操作按钮，可扩展操作按钮并提供表格中自定义列模板，使用vue的render原理实现。使用到组件BaseCrud2、">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/4693648-ce67eddc06f7bf6d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://constantinel.github.io/2019/06/28/19062803/">
+
+
+
+
+
+  <title>使用element封装动态配置表格 | 蜀城走马的个人空间</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">蜀城走马的个人空间</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-历史文章">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            历史文章
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://constantinel.github.io/2019/06/28/19062803/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content>
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="蜀城走马的个人空间">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">使用element封装动态配置表格</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-28T16:30:56+08:00">
+                2019-06-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><strong>说明：</strong>最近几个月负责公司部门vue项目的前端架构任务，该组件的设计实现，主要考虑提高业务开发效率，实现表格的动态化配置，对项目中常见的业务页面，能以较少的代码量，通过简单的json配置实现表格和表单的渲染，实现代码的开发任务。要点有三：<br>1、表格的动态化配置，动态展现表格内容、配置化显示操作按钮，可扩展操作按钮并提供表格中自定义列模板，使用vue的render原理实现。使用到组件BaseCrud<br>2、新增、修改的操作弹窗，表单内容动态配置，与表格内操作实现联动。使用组件BaseDialogForm<br>3、表格列表的数据获取，增删改查的异步请求，都依赖封装的apiService方法，方法中抽象了list、create、update、delete、detail方法，具体代码和实现思路在另外一篇文章<a href="https://www.jianshu.com/p/9287fe54e5d6" target="_blank" rel="noopener">使用axios进行apiService的封装</a>中讲解。</p>
+<p><strong>注意：</strong>crud中的表格自定义列模板依赖于cell组件，源码为下方的expand.js，需要在BaseCrud中引入使用。使用方法和iview框架的表格中自定义方法完全一致（直接使用的iview中的实现源码，哈哈<del>~</del>）。</p>
+<h3 id="一、BaseCrud的组件源码"><a href="#一、BaseCrud的组件源码" class="headerlink" title="一、BaseCrud的组件源码"></a>一、BaseCrud的组件源码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div class=&quot;crud&quot;&gt;</span><br><span class="line">     &lt;!--crud头部，包含可操作按钮--&gt;</span><br><span class="line">    &lt;el-row class=&quot;crud-header&quot;&gt;</span><br><span class="line">      &lt;el-button type=&quot;primary&quot; size=&quot;mini&quot; v-if=&quot;gridBtnConfig.create&quot; @click=&quot;createOrUpdate(null)&quot;&gt;新增        </span><br><span class="line">      &lt;/el-button&gt;</span><br><span class="line">    &lt;/el-row&gt;</span><br><span class="line">    &lt;!--crud主体内容区，展示表格内容--&gt;</span><br><span class="line">    &lt;el-table</span><br><span class="line">      :data=&quot;showGridData&quot;</span><br><span class="line">      border</span><br><span class="line">      v-loading=&quot;listLoading&quot;</span><br><span class="line">      style=&quot;width: 100%&quot;&gt;</span><br><span class="line">      &lt;el-table-column</span><br><span class="line">        v-for=&quot;(item,index) in gridConfig&quot;</span><br><span class="line">        :key=&quot;index&quot;</span><br><span class="line">        :prop=&quot;item.prop&quot;</span><br><span class="line">        :label=&quot;item.label&quot;</span><br><span class="line">        show-overflow-tooltip</span><br><span class="line">        :width=&quot;item.width?item.width:&apos;&apos;&quot;&gt;</span><br><span class="line">       &lt;template slot-scope=&quot;scope&quot;&gt;</span><br><span class="line">          &lt;Cell</span><br><span class="line">            v-if=&quot;item.render&quot;</span><br><span class="line">            :row=&quot;scope.row&quot;</span><br><span class="line">            :column=&quot;item&quot;</span><br><span class="line">            :index=&quot;scope.$index&quot;</span><br><span class="line">            :render=&quot;item.render&quot;&gt;&lt;/Cell&gt;</span><br><span class="line">          &lt;span v-else&gt;&#123;&#123;scope.row[item.prop]&#125;&#125;&lt;/span&gt;</span><br><span class="line">        &lt;/template&gt;</span><br><span class="line">      &lt;/el-table-column&gt;</span><br><span class="line">      &lt;el-table-column fixed=&quot;right&quot; v-if=&quot;!hideEditArea&quot; label=&quot;操作&quot; :width=&quot;gridEditWidth?gridEditWidth:200&quot;&gt;</span><br><span class="line">        &lt;template slot-scope=&quot;scope&quot;&gt;</span><br><span class="line">          &lt;el-button size=&quot;mini&quot; v-if=&quot;gridBtnConfig.update&quot; type=&quot;primary&quot;</span><br><span class="line">                     @click=&quot;createOrUpdate(scope.row)&quot;&gt;修改</span><br><span class="line">          &lt;/el-button&gt;</span><br><span class="line">          &lt;el-button size=&quot;mini&quot; v-if=&quot;gridBtnConfig.delete&quot; type=&quot;danger&quot; @click=&quot;remove(scope.row)&quot;&gt;删除&lt;/el-button&gt;</span><br><span class="line">          &lt;el-button size=&quot;mini&quot; v-if=&quot;gridBtnConfig.view&quot; type=&quot;primary&quot; @click=&quot;view(scope.row)&quot;&gt;查看&lt;/el-button&gt;</span><br><span class="line">          &lt;!--扩展按钮--&gt;</span><br><span class="line">          &lt;el-button size=&quot;mini&quot; @click=&quot;handleEmit(item.emitName, scope.row)&quot;</span><br><span class="line">                     v-if=&quot;gridBtnConfig.expands &amp;&amp; gridBtnConfig.expands.length&gt;0&quot;</span><br><span class="line">                     v-for=&quot;(item,index) in gridBtnConfig.expands&quot; :key=&quot;index&quot; :type=&quot;item.type?item.type:&apos;primary&apos;&quot;&gt;</span><br><span class="line">            &#123;&#123;item.name&#125;&#125;</span><br><span class="line">          &lt;/el-button&gt;</span><br><span class="line">        &lt;/template&gt;</span><br><span class="line">      &lt;/el-table-column&gt;</span><br><span class="line"></span><br><span class="line">    &lt;/el-table&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!--crud的分页组件--&gt;</span><br><span class="line">    &lt;div class=&quot;crud-pagination&quot;&gt;</span><br><span class="line">      &lt;!--如果不是异步请求展示数据，需要隐藏分页--&gt;</span><br><span class="line">      &lt;el-pagination</span><br><span class="line">        v-if=&quot;isAsync&quot;</span><br><span class="line">        @size-change=&quot;handleSizeChange&quot;</span><br><span class="line">        @current-change=&quot;handleCurrentChange&quot;</span><br><span class="line">        :current-page=&quot;currentPage&quot;</span><br><span class="line">        :page-sizes=&quot;[10, 20, 30, 40]&quot;</span><br><span class="line">        :page-size=&quot;currentPageSize&quot;</span><br><span class="line">        layout=&quot;total, sizes, prev, pager, next, jumper&quot;</span><br><span class="line">        :total=&quot;dataTotal&quot;&gt;</span><br><span class="line">      &lt;/el-pagination&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!--crud按钮触发的表单弹窗--&gt;</span><br><span class="line">    &lt;BaseDialogForm :title=&quot;dialogTitle&quot; ref=&quot;dialogForm&quot; :config=&quot;formConfig&quot; :form-data=&quot;formModel&quot;</span><br><span class="line">                    @submit=&quot;dialogSubmit&quot;&gt;&lt;/BaseDialogForm&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">  import BaseDialogForm from &apos;@/components/BaseDialogForm/index.vue&apos;</span><br><span class="line">  import Cell from &apos;./expand&apos;;</span><br><span class="line"></span><br><span class="line">  export default &#123;</span><br><span class="line">    name: &quot;base-crud&quot;,</span><br><span class="line">    components: &#123;</span><br><span class="line">      BaseDialogForm,</span><br><span class="line">      Cell </span><br><span class="line">    &#125;,</span><br><span class="line">    props: [</span><br><span class="line">      // 表单标题，例如用户、角色</span><br><span class="line">      &apos;formTitle&apos;,</span><br><span class="line">      // 表单配置</span><br><span class="line">      &apos;formConfig&apos;,</span><br><span class="line">      // 表单的model数据</span><br><span class="line">      &apos;formData&apos;,</span><br><span class="line">      // 表格配置</span><br><span class="line">      &apos;gridConfig&apos;,</span><br><span class="line">      // 表格按钮配置</span><br><span class="line">      &apos;gridBtnConfig&apos;,</span><br><span class="line">      // 表格死数据</span><br><span class="line">      &apos;gridData&apos;,</span><br><span class="line">      // 数据接口</span><br><span class="line">      &apos;apiService&apos;,</span><br><span class="line">      // 判断是否是异步数据</span><br><span class="line">      &apos;isAsync&apos;,</span><br><span class="line">      //  表格编辑区域宽度</span><br><span class="line">      &apos;gridEditWidth&apos;,</span><br><span class="line">      //  是否隐藏表格操作</span><br><span class="line">      &apos;hideEditArea&apos;,</span><br><span class="line">    ],</span><br><span class="line">    data() &#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        // 新增修改模态框title</span><br><span class="line">        dialogTitle: &apos;&apos;,</span><br><span class="line">        // 展示的表格数据，数据来源可能是父组件传递的固定数据，可能是接口请求数据</span><br><span class="line">        showGridData: [],</span><br><span class="line">        // 当前页码</span><br><span class="line">        currentPage: 1,</span><br><span class="line">        // 每页显示数量</span><br><span class="line">        currentPageSize: 10,</span><br><span class="line">        // 列表数据总数</span><br><span class="line">        dataTotal: 0,</span><br><span class="line">        // 表单数据</span><br><span class="line">        formModel: &#123;&#125;,</span><br><span class="line">        //  表格加载状态</span><br><span class="line">        listLoading: false</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    mounted() &#123;</span><br><span class="line">      this.getData();</span><br><span class="line">    &#125;,</span><br><span class="line">    methods: &#123;</span><br><span class="line">      // 获取列表数据</span><br><span class="line">      getData() &#123;</span><br><span class="line">        this.listLoading = true;</span><br><span class="line">        let params = &#123;</span><br><span class="line">          page: this.currentPage,</span><br><span class="line">          limit: this.currentPageSize</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        this.apiService.list(params).then(res =&gt; &#123;</span><br><span class="line">          this.showGridData = res.data.list;</span><br><span class="line">          this.dataTotal = res.data.total;</span><br><span class="line">          this.listLoading = false;</span><br><span class="line">        &#125;, err =&gt; &#123;</span><br><span class="line">          this.listLoading = false;</span><br><span class="line">        &#125;);</span><br><span class="line">      &#125;,</span><br><span class="line">      createOrUpdate(item) &#123;</span><br><span class="line">        this.$refs.dialogForm.resetForm();</span><br><span class="line">        // 新增时，模态框数据需要拷贝基础定义的数据模型，修改时，直接拷贝当前行数据</span><br><span class="line">        this.formModel = item ? Object.assign(&#123;&#125;, item) : Object.assign(&#123;&#125;, this.formData) ;</span><br><span class="line">        this.dialogTitle = (item ? &apos;修改&apos; : &apos;新增&apos;) + this.formTitle;</span><br><span class="line"></span><br><span class="line">        this.$refs.dialogForm.showDialog();</span><br><span class="line">      &#125;,</span><br><span class="line">      // 处理相应父组件的事件方法</span><br><span class="line">      handleEmit(emitName,row) &#123;</span><br><span class="line">        this.$emit(emitName, row);</span><br><span class="line">      &#125;,</span><br><span class="line">      handleCurrentChange(page) &#123;</span><br><span class="line">        this.currentPage = page;</span><br><span class="line">        this.getData();</span><br><span class="line">      &#125;,</span><br><span class="line">      handleSizeChange(size) &#123;</span><br><span class="line">        this.currentPageSize = size;</span><br><span class="line">        this.getData();</span><br><span class="line">      &#125;,</span><br><span class="line">      // 模态框数据提交</span><br><span class="line">      dialogSubmit(data) &#123;</span><br><span class="line">        this.apiService[data.userId ? &apos;update&apos; : &apos;create&apos;](data).then(res =&gt; &#123;</span><br><span class="line">          this.getData();</span><br><span class="line">          this.$message.success(this.dialogTitle + &apos;成功！&apos;);</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;,</span><br><span class="line">      remove(data) &#123;</span><br><span class="line">        //  处理删除逻辑</span><br><span class="line">      &#125;,</span><br><span class="line">      view(data)&#123;</span><br><span class="line">        // 处理查看详情逻辑</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    watch: &#123;</span><br><span class="line">      // 防止表格预置数据不成功，涉及生命周期问题</span><br><span class="line">      gridData() &#123;</span><br><span class="line">        this.showGridData = this.gridData;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">&lt;style rel=&quot;stylesheet/scss&quot; lang=&quot;scss&quot; scoped&gt;</span><br><span class="line">  .crud &#123;</span><br><span class="line">    .crud-header &#123;</span><br><span class="line">      margin-bottom: 10px;</span><br><span class="line">      line-height: 40px;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    .crud-pagination &#123;</span><br><span class="line">      text-align: right;</span><br><span class="line">      margin-top: 10px;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
+
+<p>该组件主要提供了表格的字段动态配置，操作按钮的自定义配置，包括是否显示新增、修改、删除、查看按钮。操作区域使用属性配置，是因为一般右侧操作区域是固定的，而且如果使用宽度自适应的话，会出现宽度不够，操作按钮换行的难看效果，所以使用gridEditWidth可配置。操作区域可隐藏，部分页面中使用可能只是查询列表。show-overflow-tooltip可以在文字过长时，用省略号显示，我这里默认每个表格都使用该属性。可根据自己项目中的需求，修改代码为该属性可配置。需要注意的是，如果表格字段为空，鼠标hover时该格子有个小黑点的效果。可以考虑在代码中，判断字段为空时显示‘–’进行标识，也防止小黑点的出现。</p>
+<p>提供了获取列表数据的方法，新增和修改的方法，依赖于BaseDialogForm组件的应用，新增和修改时会复用同一个模态框，但是通过formTitle展示不一样的标题，最后保存时通过特殊字段id进行业务逻辑的区分。扩展的操作按钮，使用handleEmit方法进行统一处理，使用事件映射完成父子组件的通信。在具体使用时，可在父组件中使用this.$refs.crud.getData()在进行业务操作后，刷新列表数据。</p>
+<p>上诉组件源码只是提供了基本的实现思路，我在项目实际使用中，结合公司的定制化业务，实际还结合了很多组件的应用，包括查看详情模态框是根据新增和修改的动态表单进行默认生成展示，配置列表上方动态生成的高级搜索表单进行表格数据查询操作等等。具体的扩展大家可以根据实际业务进行定制化修改。</p>
+<p><strong>具体的使用实例会在最下方代码展示</strong></p>
+<h3 id="二、表格自定义列模板，依赖的expand-js的源码"><a href="#二、表格自定义列模板，依赖的expand-js的源码" class="headerlink" title="二、表格自定义列模板，依赖的expand.js的源码"></a>二、表格自定义列模板，依赖的expand.js的源码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">export default &#123;</span><br><span class="line">    name: &apos;TableExpand&apos;,</span><br><span class="line">    functional: true,</span><br><span class="line">    props: &#123;</span><br><span class="line">        row: Object,</span><br><span class="line">        render: Function,</span><br><span class="line">        index: Number,</span><br><span class="line">        column: &#123;</span><br><span class="line">            type: Object,</span><br><span class="line">            default: null</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    render: (h, ctx) =&gt; &#123;</span><br><span class="line">        const params = &#123;</span><br><span class="line">            row: ctx.props.row,</span><br><span class="line">            index: ctx.props.index</span><br><span class="line">        &#125;;</span><br><span class="line">        if (ctx.props.column) params.column = ctx.props.column;</span><br><span class="line">        return ctx.props.render(h, params);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="三、BaseDialogForm组件的源码"><a href="#三、BaseDialogForm组件的源码" class="headerlink" title="三、BaseDialogForm组件的源码"></a>三、BaseDialogForm组件的源码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;el-dialog</span><br><span class="line">    :title=&quot;title&quot;</span><br><span class="line">    :visible.sync=&quot;dialogVisible&quot;</span><br><span class="line">    :width=&quot;width?width:&apos;80%&apos;&quot;&gt;</span><br><span class="line">    &lt;el-form :model=&quot;formModel&quot; ref=&quot;configForm&quot; label-width=&quot;100px&quot;&gt;</span><br><span class="line">      &lt;el-row :gutter=&quot;16&quot;&gt;</span><br><span class="line">        &lt;el-col :span=&quot;item.span?item.span:8&quot; v-for=&quot;(item,index) in config&quot; :key=&quot;index&quot;&gt;</span><br><span class="line">          &lt;el-form-item</span><br><span class="line">            :prop=&quot;item.prop&quot;</span><br><span class="line">            :rules=&quot;item.rules&quot;</span><br><span class="line">            :label=&quot;item.label&quot;</span><br><span class="line">          &gt;</span><br><span class="line">            &lt;!--输入框表单类型--&gt;</span><br><span class="line">            &lt;el-input v-if=&quot;item.type ===&apos;text&apos;&quot; v-model=&quot;formData[item.prop]&quot;</span><br><span class="line">                      :placeholder=&quot;item.placeholder?item.placeholder:&apos;请输入&apos;&quot;&gt;&lt;/el-input&gt;</span><br><span class="line">            &lt;!--文本域表单类型--&gt;</span><br><span class="line">            &lt;el-input v-if=&quot;item.type === &apos;textarea&apos;&quot; type=&quot;textarea&quot; v-model=&quot;formData[item.prop]&quot;</span><br><span class="line">                      :placeholder=&quot;item.placeholder?item.placeholder:&apos;请输入&apos;&quot;&gt;&lt;/el-input&gt;</span><br><span class="line">            &lt;!--checkbox表单类型--&gt;</span><br><span class="line">            &lt;el-checkbox-group v-if=&quot;item.type === &apos;checkbox&apos;&quot; v-model=&quot;formData[item.prop]&quot;</span><br><span class="line">                               :placeholder=&quot;item.placeholder?item.placeholder:&apos;请选择&apos;&quot;&gt;</span><br><span class="line">              &lt;el-checkbox v-for=&quot;option in item.data&quot; :label=&quot;option.id&quot; :key=&quot;option.id&quot;&gt;&#123;&#123;option.name&#125;&#125;&lt;/el-checkbox&gt;</span><br><span class="line">            &lt;/el-checkbox-group&gt;</span><br><span class="line">            &lt;!--radio表单类型--&gt;</span><br><span class="line">            &lt;el-radio-group v-if=&quot;item.type === &apos;radio&apos;&quot; v-model=&quot;formData[item.prop]&quot;</span><br><span class="line">                            :placeholder=&quot;item.placeholder?item.placeholder:&apos;请选择&apos;&quot;&gt;</span><br><span class="line">              &lt;el-radio v-for=&quot;option in item.data&quot; :label=&quot;option.id&quot; :key=&quot;option.id&quot;&gt;&#123;&#123;option.name&#125;&#125;&lt;/el-radio&gt;</span><br><span class="line">            &lt;/el-radio-group&gt;</span><br><span class="line">            &lt;!--下拉选择类型--&gt;</span><br><span class="line">            &lt;el-select v-if=&quot;item.type === &apos;select&apos;&quot; v-model=&quot;formData[item.prop]&quot;</span><br><span class="line">                       :placeholder=&quot;item.placeholder?item.placeholder:&apos;请选择&apos;&quot;&gt;</span><br><span class="line">              &lt;el-option</span><br><span class="line">                v-for=&quot;option in item.data&quot;</span><br><span class="line">                :key=&quot;option.id&quot;</span><br><span class="line">                :label=&quot;option.name&quot;</span><br><span class="line">                :value=&quot;option.id&quot;&gt;</span><br><span class="line">              &lt;/el-option&gt;</span><br><span class="line">            &lt;/el-select&gt;</span><br><span class="line"></span><br><span class="line">            &lt;el-date-picker</span><br><span class="line">              v-if=&quot;item.type === &apos;datepicker&apos;&quot;</span><br><span class="line">              v-model=&quot;formData[item.prop]&quot;</span><br><span class="line">              type=&quot;date&quot;</span><br><span class="line">              :placeholder=&quot;item.placeholder?item.placeholder:&apos;请选择日期&apos;&quot;&gt;</span><br><span class="line">            &lt;/el-date-picker&gt;</span><br><span class="line"></span><br><span class="line">          &lt;/el-form-item&gt;</span><br><span class="line">        &lt;/el-col&gt;</span><br><span class="line">      &lt;/el-row&gt;</span><br><span class="line">    &lt;/el-form&gt;</span><br><span class="line"></span><br><span class="line">    &lt;span slot=&quot;footer&quot; class=&quot;dialog-footer&quot;&gt;</span><br><span class="line">    &lt;el-button @click=&quot;dialogVisible = false&quot;&gt;取 消&lt;/el-button&gt;</span><br><span class="line">    &lt;el-button type=&quot;primary&quot; @click=&quot;submitForm&quot;&gt;确 定&lt;/el-button&gt;</span><br><span class="line">  &lt;/span&gt;</span><br><span class="line">  &lt;/el-dialog&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">  export default &#123;</span><br><span class="line">    name: &quot;base-dialog-form&quot;,</span><br><span class="line">    props: [</span><br><span class="line">      &apos;title&apos;,</span><br><span class="line">      &apos;width&apos;,</span><br><span class="line">      &apos;visible&apos;,</span><br><span class="line">      &apos;config&apos;,</span><br><span class="line">      &apos;formData&apos;</span><br><span class="line">    ],</span><br><span class="line">    data() &#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        formModel: &#123;&#125;,</span><br><span class="line">        dialogVisible: false,</span><br><span class="line">        dialogTitle: &apos;&apos;,</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    mounted() &#123;</span><br><span class="line">      // 将组件上的属性赋值给当前组件内变量，因为props只能单向绑定,还需要监听属性值变化进行父子组件间交互</span><br><span class="line">      this.formModel = this.formData;</span><br><span class="line">      this.dialogVisible = this.visible;</span><br><span class="line">      this.dialogTitle = this.title;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods: &#123;</span><br><span class="line">      // 提交表单数据</span><br><span class="line">      submitForm() &#123;</span><br><span class="line">        this.$refs.configForm.validate((valid) =&gt; &#123;</span><br><span class="line">          if (valid) &#123;</span><br><span class="line">            // 让父组件接收到响应数据</span><br><span class="line">            this.$emit(&apos;submit&apos;, this.formModel);</span><br><span class="line">            // 关闭模态框</span><br><span class="line">            this.dialogVisible = false;</span><br><span class="line">          &#125; else &#123;</span><br><span class="line">            console.log(&apos;error submit!!&apos;);</span><br><span class="line">            return false;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">      &#125;,</span><br><span class="line">      // 重置表单状态</span><br><span class="line">      resetForm() &#123;</span><br><span class="line">        if (this.$refs.configForm) &#123;</span><br><span class="line">          this.$refs.configForm.resetFields();</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      // 展示模态框</span><br><span class="line">      showDialog() &#123;</span><br><span class="line">        this.dialogVisible = true;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    watch: &#123;</span><br><span class="line">      /*实现表单数据的绑定，实时接收父组件的数据变化*/</span><br><span class="line">      formData() &#123;</span><br><span class="line">        this.formModel = this.formData;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">&lt;style rel=&quot;stylesheet/scss&quot; lang=&quot;scss&quot; scoped&gt;</span><br><span class="line">  .el-input&#123;</span><br><span class="line">    width: 100% !important;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  .el-select&#123;</span><br><span class="line">    width: 100% !important;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
+
+<p>上诉代码大家应该都能看懂，就是通过简单的config数组提供需要动态生成的表单配置，具体包含表单控件类型、对应的字段、验证规则、placeholder文字等等所需的配置，可根据自身情况进行扩展，此处只做简单的示例</p>
+<p>需要注意的是，在使用重置表单状态的方法中，需要预先判断组件实例是否存在，因为el-dialog的底层代码实现用了v-if，在第一次还未显示时，dom实际不存在，如果不进行判断直接使用的话，代码会报错。</p>
+<h3 id="四、使用示例之用户列表渲染"><a href="#四、使用示例之用户列表渲染" class="headerlink" title="四、使用示例之用户列表渲染"></a>四、使用示例之用户列表渲染</h3><p>页面代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;BaseCrud @download=&quot;download&quot; :apiService=&quot;userService&quot; :grid-config=&quot;configData.gridConfig&quot; :grid-btn-config=&quot;configData.gridBtnConfig&quot;</span><br><span class="line">              :grid-data=&quot;testData&quot;</span><br><span class="line">              :form-config=&quot;configData.formConfig&quot; :form-data=&quot;configData.formModel&quot; :grid-edit-width=&quot;200&quot;</span><br><span class="line">              form-title=&quot;用户&quot; :is-async=&quot;true&quot;&gt;</span><br><span class="line">    &lt;/BaseCrud&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">  import BaseCrud from &apos;@/components/BaseCrud/index.vue&apos;</span><br><span class="line">  import &#123;USER_CONFIG&#125; from &apos;./config&apos;</span><br><span class="line">  import &#123;userService&#125; from &apos;@/api/user.js&apos;</span><br><span class="line"></span><br><span class="line">  export default &#123;</span><br><span class="line">    components: &#123;</span><br><span class="line">      BaseCrud</span><br><span class="line">    &#125;,</span><br><span class="line">    data () &#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        testData: [],</span><br><span class="line">        configData: USER_CONFIG,</span><br><span class="line">        userService: userService</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    name: &apos;user-list&apos;,</span><br><span class="line">    mounted () &#123;</span><br><span class="line">      this.testData = [</span><br><span class="line">        &#123;</span><br><span class="line">          id: &apos;1&apos;,</span><br><span class="line">          tel: &apos;15184318420&apos;,</span><br><span class="line">          name: &apos;小白&apos;,</span><br><span class="line">          email: &apos;412412@qq.com&apos;,</span><br><span class="line">          status: &apos;1&apos;,</span><br><span class="line">          create_time: &apos;2018-04-20&apos;,</span><br><span class="line">          expand: &apos;扩展信息一&apos;,</span><br><span class="line">          role: [&apos;2&apos;]</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          id: &apos;2&apos;,</span><br><span class="line">          tel: &apos;13777369283&apos;,</span><br><span class="line">          name: &apos;小红&apos;,</span><br><span class="line">          email: &apos;456465@qq.com&apos;,</span><br><span class="line">          status: &apos;0&apos;,</span><br><span class="line">          create_time: &apos;2018-03-23&apos;,</span><br><span class="line">          expand: &apos;hashashashas&apos;,</span><br><span class="line">          role: [&apos;1&apos;]</span><br><span class="line">        &#125;</span><br><span class="line">      ];</span><br><span class="line">    &#125;,</span><br><span class="line">    methods: &#123;</span><br><span class="line">      download(row)&#123;</span><br><span class="line">        console.log(&apos;点击了下载按钮&apos;,row);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>config配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line">export const USER_CONFIG = &#123;</span><br><span class="line">  gridConfig: [</span><br><span class="line">    &#123;label: &apos;用户ID&apos;, prop: &apos;id&apos;, width: &apos;100&apos;&#125;,</span><br><span class="line">    &#123;label: &apos;手机号(登录账号)&apos;, prop: &apos;tel&apos;&#125;,</span><br><span class="line">    &#123;label: &apos;邮箱&apos;, prop: &apos;email&apos;, width: &apos;100&apos;&#125;,</span><br><span class="line">    &#123;label: &apos;中文名&apos;, prop: &apos;name&apos;&#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      label: &apos;状态&apos;, prop: &apos;status&apos;, render: (h, params) =&gt; &#123;</span><br><span class="line">        if(params.row.status === &apos;0&apos;)&#123;</span><br><span class="line">          return h(&apos;el-tag&apos;, &#123;</span><br><span class="line">            props:&#123;</span><br><span class="line">              size:&apos;mini&apos;,</span><br><span class="line">              type:&apos;warning&apos;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;,&apos;正常&apos;);</span><br><span class="line">        &#125;else &#123;</span><br><span class="line">          return h(&apos;el-tag&apos;, &#123;</span><br><span class="line">            props:&#123;</span><br><span class="line">              size:&apos;mini&apos;,</span><br><span class="line">              type:&apos;success&apos;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;,&apos;禁用&apos;);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;label: &apos;创建时间&apos;, prop: &apos;create_time&apos;&#125;,</span><br><span class="line">    &#123;label: &apos;扩展信息&apos;, prop: &apos;expand&apos;&#125;</span><br><span class="line">  ],</span><br><span class="line">  // crud的模态框表单配置，可配置表单类型，验证规则，是否必填,col-span布局可通过span参数配置</span><br><span class="line">  formConfig: [</span><br><span class="line">    &#123;span: 12, label: &apos;手机号&apos;, prop: &apos;tel&apos;, type: &apos;text&apos;&#125;,</span><br><span class="line">    &#123;span: 12, label: &apos;中文名&apos;, prop: &apos;name&apos;, type: &apos;text&apos;&#125;,</span><br><span class="line">    &#123;span: 12, label: &apos;邮箱&apos;, prop: &apos;email&apos;, type: &apos;text&apos;&#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      span: 12, label: &apos;角色&apos;,</span><br><span class="line">      prop: &apos;roleIdList&apos;,</span><br><span class="line">      type: &apos;checkbox&apos;,</span><br><span class="line">      data: [&#123;name: &apos;角色一&apos;, id: &apos;1&apos;&#125;, &#123;name: &apos;角色二&apos;, id: &apos;2&apos;&#125;],</span><br><span class="line">      rules: &#123; type: &apos;array&apos;, required: true, message: &apos;请选择角色&apos;, trigger: &apos;change&apos; &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      span: 12, label: &apos;状态&apos;,</span><br><span class="line">      prop: &apos;status&apos;,</span><br><span class="line">      type: &apos;radio&apos;,</span><br><span class="line">      data: [&#123;name: &apos;正常&apos;, id: 1&#125;, &#123;name: &apos;禁用&apos;, id: 0&#125;],</span><br><span class="line">      rules: &#123;required: true, message: &apos;请选择角色状态&apos;, trigger: &apos;change&apos;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;span: 24, label: &apos;备注&apos;, prop: &apos;expand&apos;, type: &apos;textarea&apos;&#125;</span><br><span class="line">  ],</span><br><span class="line">  // crud的操作按钮配置，基础按钮有添加、修改、删除、查看，还可以配置扩展按钮</span><br><span class="line">  gridBtnConfig: &#123;</span><br><span class="line">    create: true, update: true, delete: true, view: false,</span><br><span class="line">    expands: [</span><br><span class="line">      &#123; name: &apos;下载按钮&apos;, emitName: &apos;download&apos;, type: &apos;primary&apos; &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">  // 表单基础数据类型，需要预先赋值</span><br><span class="line">  formModel: &#123;</span><br><span class="line">    id: &apos;&apos;,</span><br><span class="line">    tel: &apos;&apos;,</span><br><span class="line">    name: &apos;&apos;,</span><br><span class="line">    email: &apos;&apos;,</span><br><span class="line">    status: &apos;&apos;,</span><br><span class="line">    create_time: &apos;&apos;,</span><br><span class="line">    expand: &apos;&apos;,</span><br><span class="line">    roleIdList: []</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>以上是用户列表的基础配置使用示例，数据使用的是测试数据。在实际使用中应该是通过apiService从服务器端请求数据。下列截图展示了基础的配置使用效果展示。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4693648-ce67eddc06f7bf6d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="QQ浏览器截图20180829225231.png"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4693648-654e6f6e35d9cbc0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="QQ浏览器截图20180829225250.png"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4693648-35baf5433f777bc6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="QQ浏览器截图20180829225305.png"></p>
+<h3 id="五、总结"><a href="#五、总结" class="headerlink" title="五、总结"></a>五、总结</h3><p>上诉示例是基础业务的实现代码，由于实际业务中代码量稍大，逻辑稍微复杂，并未在此处进行完全展示。此处代码为删减版，可能有一些问题，可以留言进行探讨解决。表格配置实际使用中，应该会有使用过滤器的情况，还有我在项目中实际使用时，有表格多选的情况，表格内操作按钮，和表格外按钮的配置，以及涉及批量操作的如批量删除等业务。若后期大家实际需要，我会陆续分享实现方案。<br>如果各位大牛有更好的实现方案，也希望不吝赐教，大家共同进步。<br>最后，希望走过路过的朋友能个给个赞呗，谢谢~~</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/vue-element/" rel="tag"># vue element</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/28/19062802/" rel="next" title="VUE通用指令、过滤器的封装和使用">
+                <i class="fa fa-chevron-left"></i> VUE通用指令、过滤器的封装和使用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/28/19062804/" rel="prev" title="使用axios进行apiService的封装">
+                使用axios进行apiService的封装 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description">在时光的雕刻下，人被凿去虚妄，磨出温润...</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、BaseCrud的组件源码"><span class="nav-number">1.</span> <span class="nav-text">一、BaseCrud的组件源码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、表格自定义列模板，依赖的expand-js的源码"><span class="nav-number">2.</span> <span class="nav-text">二、表格自定义列模板，依赖的expand.js的源码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三、BaseDialogForm组件的源码"><span class="nav-number">3.</span> <span class="nav-text">三、BaseDialogForm组件的源码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#四、使用示例之用户列表渲染"><span class="nav-number">4.</span> <span class="nav-text">四、使用示例之用户列表渲染</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#五、总结"><span class="nav-number">5.</span> <span class="nav-text">五、总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

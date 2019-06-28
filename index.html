@@ -5,7 +5,7 @@
   
 
 
-<html class="theme-next mist use-motion" lang="zh-CN">
+<html class="theme-next gemini use-motion" lang="zh-Hans">
 <head><meta name="generator" content="Hexo 3.9.0">
   <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -86,7 +86,7 @@
 <meta property="og:url" content="https://constantinel.github.io/index.html">
 <meta property="og:site_name" content="蜀城走马的个人空间">
 <meta property="og:description" content="在时光的雕刻下，人被凿去虚妄，磨出温润...">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh-Hans">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="蜀城走马的个人空间">
 <meta name="twitter:description" content="在时光的雕刻下，人被凿去虚妄，磨出温润...">
@@ -97,7 +97,7 @@
   var NexT = window.NexT || {};
   var CONFIG = {
     root: '/',
-    scheme: 'Mist',
+    scheme: 'Gemini',
     version: '5.1.4',
     sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
     fancybox: true,
@@ -105,7 +105,7 @@
     motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
     duoshuo: {
       userId: '0',
-      author: 'Author'
+      author: '博主'
     },
     algolia: {
       applicationID: '',
@@ -137,7 +137,7 @@
 
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
 
   
   
@@ -233,7 +233,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://constantinel.github.io/2019/06/28/hello-world/">
+    <link itemprop="mainEntityOfPage" href="https://constantinel.github.io/2019/06/28/19062804/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content>
@@ -252,7 +252,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/06/28/hello-world/" itemprop="url">前言</a></h1>
+                <a class="post-title-link" href="/2019/06/28/19062804/" itemprop="url">使用axios进行apiService的封装</a></h1>
         
 
         <div class="post-meta">
@@ -262,10 +262,692 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               
-                <span class="post-meta-item-text">Posted on</span>
+                <span class="post-meta-item-text">发表于</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-06-28T11:03:03+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-28T16:55:11+08:00">
                 2019-06-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h3><p>最近在进行项目前端架构的过程中，一直在想如何封装异步请求的apiService，达到更规范的应用和更简便的书写。刚开始想使用定义抽象类的方式进行书写，后面发现不可行，并不能达到自己想象的减少代码量，并且能保持很强的重用性。最后想到使用构造函数的方式进行封装。具体代码实现如下：</p>
+<h3 id="一、拦截器的代码实现："><a href="#一、拦截器的代码实现：" class="headerlink" title="一、拦截器的代码实现："></a>一、拦截器的代码实现：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">import axios from &apos;axios&apos;</span><br><span class="line"></span><br><span class="line">// 创建axios实例</span><br><span class="line">const service = axios.create(&#123;</span><br><span class="line">  // baseURL: process.env.BASE_API, // api的base_url</span><br><span class="line">  timeout: 30000 // 请求超时时间</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">// request拦截器</span><br><span class="line">service.interceptors.request.use(config =&gt; &#123;</span><br><span class="line">  //此处进行token等数据处理</span><br><span class="line">  return config</span><br><span class="line">&#125;, error =&gt; &#123;</span><br><span class="line">  // Do something with request error</span><br><span class="line">  Promise.reject(error)</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">// respone拦截器</span><br><span class="line">service.interceptors.response.use(</span><br><span class="line">  response =&gt; &#123;</span><br><span class="line">    const res = response.data;</span><br><span class="line">    if (res.code !== 200) &#123;</span><br><span class="line">      //此处进行异常处理</span><br><span class="line">      return Promise.reject(res);</span><br><span class="line">    &#125;</span><br><span class="line">    return response</span><br><span class="line">  &#125;,</span><br><span class="line">  error =&gt; &#123;</span><br><span class="line">    //此处进行异常处理</span><br><span class="line">    return Promise.reject(error)</span><br><span class="line">  &#125;</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">export default service</span><br></pre></td></tr></table></figure>
+
+<p>首先实现拦截器的配置，对项目实际使用时的错误提示、token的绑定进行统一处理</p>
+<h3 id="二、apiService的构造函数实现"><a href="#二、apiService的构造函数实现" class="headerlink" title="二、apiService的构造函数实现"></a>二、apiService的构造函数实现</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">import request from &apos;./request&apos;</span><br><span class="line"></span><br><span class="line">export class ApiService &#123;</span><br><span class="line">  constructor(url) &#123;</span><br><span class="line">    this.baseUrl = url;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  //获取列表数据</span><br><span class="line">  list(query) &#123;</span><br><span class="line">    return request(&#123;</span><br><span class="line">      url: this.baseUrl + &apos;/list&apos;,</span><br><span class="line">      method: &apos;get&apos;,</span><br><span class="line">      params: query</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  //新增数据</span><br><span class="line">  create(data) &#123;</span><br><span class="line">    return request(&#123;</span><br><span class="line">      url: this.baseUrl + &apos;/create&apos;,</span><br><span class="line">      method: &apos;post&apos;,</span><br><span class="line">      data: data</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  //修改数据</span><br><span class="line">  update(data) &#123;</span><br><span class="line">    return request(&#123;</span><br><span class="line">      url: this.baseUrl + &apos;/update&apos;,</span><br><span class="line">      method: &apos;put&apos;,</span><br><span class="line">      data: data</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  //删除数据</span><br><span class="line">  delete(id) &#123;</span><br><span class="line">    return request(&#123;</span><br><span class="line">      url: this.baseUrl + &apos;/delete/&apos; + id,</span><br><span class="line">      method: &apos;delete&apos;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  //获取数据详情</span><br><span class="line">  view(id) &#123;</span><br><span class="line">    return request(&#123;</span><br><span class="line">      url: this.baseUrl + &apos;/view/&apos; + id,</span><br><span class="line">      method: &apos;get&apos;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在实际使用时，仅需定义如userApiService，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">import &#123;ApiService&#125; from &apos;./apiService&apos;</span><br><span class="line"></span><br><span class="line">export const UserApiService = new ApiService(&apos;/user&apos;);</span><br></pre></td></tr></table></figure>
+
+<p>在实际使用页面中，引用UserApiService ，就可以调用list、create、update、delete、view等方法了。当然，实际使用中会有自己的特殊需求，如提交等请求，需要特殊的url拼接。但是，总的来说前后端一定遵循公司内部规范，用这样的写法可以达到较少的代码量实现较高的复用性。<br>最后，希望大家有更好的实现方案可以在评论中告知，互相进步学习。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://constantinel.github.io/2019/06/28/19062803/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content>
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="蜀城走马的个人空间">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/28/19062803/" itemprop="url">使用element封装动态配置表格</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-28T16:30:56+08:00">
+                2019-06-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong>说明：</strong>最近几个月负责公司部门vue项目的前端架构任务，该组件的设计实现，主要考虑提高业务开发效率，实现表格的动态化配置，对项目中常见的业务页面，能以较少的代码量，通过简单的json配置实现表格和表单的渲染，实现代码的开发任务。要点有三：<br>1、表格的动态化配置，动态展现表格内容、配置化显示操作按钮，可扩展操作按钮并提供表格中自定义列模板，使用vue的render原理实现。使用到组件BaseCrud<br>2、新增、修改的操作弹窗，表单内容动态配置，与表格内操作实现联动。使用组件BaseDialogForm<br>3、表格列表的数据获取，增删改查的异步请求，都依赖封装的apiService方法，方法中抽象了list、create、update、delete、detail方法，具体代码和实现思路在另外一篇文章<a href="https://www.jianshu.com/p/9287fe54e5d6" target="_blank" rel="noopener">使用axios进行apiService的封装</a>中讲解。</p>
+<p><strong>注意：</strong>crud中的表格自定义列模板依赖于cell组件，源码为下方的expand.js，需要在BaseCrud中引入使用。使用方法和iview框架的表格中自定义方法完全一致（直接使用的iview中的实现源码，哈哈<del>~</del>）。</p>
+<h3 id="一、BaseCrud的组件源码"><a href="#一、BaseCrud的组件源码" class="headerlink" title="一、BaseCrud的组件源码"></a>一、BaseCrud的组件源码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div class=&quot;crud&quot;&gt;</span><br><span class="line">     &lt;!--crud头部，包含可操作按钮--&gt;</span><br><span class="line">    &lt;el-row class=&quot;crud-header&quot;&gt;</span><br><span class="line">      &lt;el-button type=&quot;primary&quot; size=&quot;mini&quot; v-if=&quot;gridBtnConfig.create&quot; @click=&quot;createOrUpdate(null)&quot;&gt;新增        </span><br><span class="line">      &lt;/el-button&gt;</span><br><span class="line">    &lt;/el-row&gt;</span><br><span class="line">    &lt;!--crud主体内容区，展示表格内容--&gt;</span><br><span class="line">    &lt;el-table</span><br><span class="line">      :data=&quot;showGridData&quot;</span><br><span class="line">      border</span><br><span class="line">      v-loading=&quot;listLoading&quot;</span><br><span class="line">      style=&quot;width: 100%&quot;&gt;</span><br><span class="line">      &lt;el-table-column</span><br><span class="line">        v-for=&quot;(item,index) in gridConfig&quot;</span><br><span class="line">        :key=&quot;index&quot;</span><br><span class="line">        :prop=&quot;item.prop&quot;</span><br><span class="line">        :label=&quot;item.label&quot;</span><br><span class="line">        show-overflow-tooltip</span><br><span class="line">        :width=&quot;item.width?item.width:&apos;&apos;&quot;&gt;</span><br><span class="line">       &lt;template slot-scope=&quot;scope&quot;&gt;</span><br><span class="line">          &lt;Cell</span><br><span class="line">            v-if=&quot;item.render&quot;</span><br><span class="line">            :row=&quot;scope.row&quot;</span><br><span class="line">            :column=&quot;item&quot;</span><br><span class="line">            :index=&quot;scope.$index&quot;</span><br><span class="line">            :render=&quot;item.render&quot;&gt;&lt;/Cell&gt;</span><br><span class="line">          &lt;span v-else&gt;&#123;&#123;scope.row[item.prop]&#125;&#125;&lt;/span&gt;</span><br><span class="line">        &lt;/template&gt;</span><br><span class="line">      &lt;/el-table-column&gt;</span><br><span class="line">      &lt;el-table-column fixed=&quot;right&quot; v-if=&quot;!hideEditArea&quot; label=&quot;操作&quot; :width=&quot;gridEditWidth?gridEditWidth:200&quot;&gt;</span><br><span class="line">        &lt;template slot-scope=&quot;scope&quot;&gt;</span><br><span class="line">          &lt;el-button size=&quot;mini&quot; v-if=&quot;gridBtnConfig.update&quot; type=&quot;primary&quot;</span><br><span class="line">                     @click=&quot;createOrUpdate(scope.row)&quot;&gt;修改</span><br><span class="line">          &lt;/el-button&gt;</span><br><span class="line">          &lt;el-button size=&quot;mini&quot; v-if=&quot;gridBtnConfig.delete&quot; type=&quot;danger&quot; @click=&quot;remove(scope.row)&quot;&gt;删除&lt;/el-button&gt;</span><br><span class="line">          &lt;el-button size=&quot;mini&quot; v-if=&quot;gridBtnConfig.view&quot; type=&quot;primary&quot; @click=&quot;view(scope.row)&quot;&gt;查看&lt;/el-button&gt;</span><br><span class="line">          &lt;!--扩展按钮--&gt;</span><br><span class="line">          &lt;el-button size=&quot;mini&quot; @click=&quot;handleEmit(item.emitName, scope.row)&quot;</span><br><span class="line">                     v-if=&quot;gridBtnConfig.expands &amp;&amp; gridBtnConfig.expands.length&gt;0&quot;</span><br><span class="line">                     v-for=&quot;(item,index) in gridBtnConfig.expands&quot; :key=&quot;index&quot; :type=&quot;item.type?item.type:&apos;primary&apos;&quot;&gt;</span><br><span class="line">            &#123;&#123;item.name&#125;&#125;</span><br><span class="line">          &lt;/el-button&gt;</span><br><span class="line">        &lt;/template&gt;</span><br><span class="line">      &lt;/el-table-column&gt;</span><br><span class="line"></span><br><span class="line">    &lt;/el-table&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!--crud的分页组件--&gt;</span><br><span class="line">    &lt;div class=&quot;crud-pagination&quot;&gt;</span><br><span class="line">      &lt;!--如果不是异步请求展示数据，需要隐藏分页--&gt;</span><br><span class="line">      &lt;el-pagination</span><br><span class="line">        v-if=&quot;isAsync&quot;</span><br><span class="line">        @size-change=&quot;handleSizeChange&quot;</span><br><span class="line">        @current-change=&quot;handleCurrentChange&quot;</span><br><span class="line">        :current-page=&quot;currentPage&quot;</span><br><span class="line">        :page-sizes=&quot;[10, 20, 30, 40]&quot;</span><br><span class="line">        :page-size=&quot;currentPageSize&quot;</span><br><span class="line">        layout=&quot;total, sizes, prev, pager, next, jumper&quot;</span><br><span class="line">        :total=&quot;dataTotal&quot;&gt;</span><br><span class="line">      &lt;/el-pagination&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!--crud按钮触发的表单弹窗--&gt;</span><br><span class="line">    &lt;BaseDialogForm :title=&quot;dialogTitle&quot; ref=&quot;dialogForm&quot; :config=&quot;formConfig&quot; :form-data=&quot;formModel&quot;</span><br><span class="line">                    @submit=&quot;dialogSubmit&quot;&gt;&lt;/BaseDialogForm&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">  import BaseDialogForm from &apos;@/components/BaseDialogForm/index.vue&apos;</span><br><span class="line">  import Cell from &apos;./expand&apos;;</span><br><span class="line"></span><br><span class="line">  export default &#123;</span><br><span class="line">    name: &quot;base-crud&quot;,</span><br><span class="line">    components: &#123;</span><br><span class="line">      BaseDialogForm,</span><br><span class="line">      Cell </span><br><span class="line">    &#125;,</span><br><span class="line">    props: [</span><br><span class="line">      // 表单标题，例如用户、角色</span><br><span class="line">      &apos;formTitle&apos;,</span><br><span class="line">      // 表单配置</span><br><span class="line">      &apos;formConfig&apos;,</span><br><span class="line">      // 表单的model数据</span><br><span class="line">      &apos;formData&apos;,</span><br><span class="line">      // 表格配置</span><br><span class="line">      &apos;gridConfig&apos;,</span><br><span class="line">      // 表格按钮配置</span><br><span class="line">      &apos;gridBtnConfig&apos;,</span><br><span class="line">      // 表格死数据</span><br><span class="line">      &apos;gridData&apos;,</span><br><span class="line">      // 数据接口</span><br><span class="line">      &apos;apiService&apos;,</span><br><span class="line">      // 判断是否是异步数据</span><br><span class="line">      &apos;isAsync&apos;,</span><br><span class="line">      //  表格编辑区域宽度</span><br><span class="line">      &apos;gridEditWidth&apos;,</span><br><span class="line">      //  是否隐藏表格操作</span><br><span class="line">      &apos;hideEditArea&apos;,</span><br><span class="line">    ],</span><br><span class="line">    data() &#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        // 新增修改模态框title</span><br><span class="line">        dialogTitle: &apos;&apos;,</span><br><span class="line">        // 展示的表格数据，数据来源可能是父组件传递的固定数据，可能是接口请求数据</span><br><span class="line">        showGridData: [],</span><br><span class="line">        // 当前页码</span><br><span class="line">        currentPage: 1,</span><br><span class="line">        // 每页显示数量</span><br><span class="line">        currentPageSize: 10,</span><br><span class="line">        // 列表数据总数</span><br><span class="line">        dataTotal: 0,</span><br><span class="line">        // 表单数据</span><br><span class="line">        formModel: &#123;&#125;,</span><br><span class="line">        //  表格加载状态</span><br><span class="line">        listLoading: false</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    mounted() &#123;</span><br><span class="line">      this.getData();</span><br><span class="line">    &#125;,</span><br><span class="line">    methods: &#123;</span><br><span class="line">      // 获取列表数据</span><br><span class="line">      getData() &#123;</span><br><span class="line">        this.listLoading = true;</span><br><span class="line">        let params = &#123;</span><br><span class="line">          page: this.currentPage,</span><br><span class="line">          limit: this.currentPageSize</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        this.apiService.list(params).then(res =&gt; &#123;</span><br><span class="line">          this.showGridData = res.data.list;</span><br><span class="line">          this.dataTotal = res.data.total;</span><br><span class="line">          this.listLoading = false;</span><br><span class="line">        &#125;, err =&gt; &#123;</span><br><span class="line">          this.listLoading = false;</span><br><span class="line">        &#125;);</span><br><span class="line">      &#125;,</span><br><span class="line">      createOrUpdate(item) &#123;</span><br><span class="line">        this.$refs.dialogForm.resetForm();</span><br><span class="line">        // 新增时，模态框数据需要拷贝基础定义的数据模型，修改时，直接拷贝当前行数据</span><br><span class="line">        this.formModel = item ? Object.assign(&#123;&#125;, item) : Object.assign(&#123;&#125;, this.formData) ;</span><br><span class="line">        this.dialogTitle = (item ? &apos;修改&apos; : &apos;新增&apos;) + this.formTitle;</span><br><span class="line"></span><br><span class="line">        this.$refs.dialogForm.showDialog();</span><br><span class="line">      &#125;,</span><br><span class="line">      // 处理相应父组件的事件方法</span><br><span class="line">      handleEmit(emitName,row) &#123;</span><br><span class="line">        this.$emit(emitName, row);</span><br><span class="line">      &#125;,</span><br><span class="line">      handleCurrentChange(page) &#123;</span><br><span class="line">        this.currentPage = page;</span><br><span class="line">        this.getData();</span><br><span class="line">      &#125;,</span><br><span class="line">      handleSizeChange(size) &#123;</span><br><span class="line">        this.currentPageSize = size;</span><br><span class="line">        this.getData();</span><br><span class="line">      &#125;,</span><br><span class="line">      // 模态框数据提交</span><br><span class="line">      dialogSubmit(data) &#123;</span><br><span class="line">        this.apiService[data.userId ? &apos;update&apos; : &apos;create&apos;](data).then(res =&gt; &#123;</span><br><span class="line">          this.getData();</span><br><span class="line">          this.$message.success(this.dialogTitle + &apos;成功！&apos;);</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;,</span><br><span class="line">      remove(data) &#123;</span><br><span class="line">        //  处理删除逻辑</span><br><span class="line">      &#125;,</span><br><span class="line">      view(data)&#123;</span><br><span class="line">        // 处理查看详情逻辑</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    watch: &#123;</span><br><span class="line">      // 防止表格预置数据不成功，涉及生命周期问题</span><br><span class="line">      gridData() &#123;</span><br><span class="line">        this.showGridData = this.gridData;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">&lt;style rel=&quot;stylesheet/scss&quot; lang=&quot;scss&quot; scoped&gt;</span><br><span class="line">  .crud &#123;</span><br><span class="line">    .crud-header &#123;</span><br><span class="line">      margin-bottom: 10px;</span><br><span class="line">      line-height: 40px;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    .crud-pagination &#123;</span><br><span class="line">      text-align: right;</span><br><span class="line">      margin-top: 10px;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
+
+<p>该组件主要提供了表格的字段动态配置，操作按钮的自定义配置，包括是否显示新增、修改、删除、查看按钮。操作区域使用属性配置，是因为一般右侧操作区域是固定的，而且如果使用宽度自适应的话，会出现宽度不够，操作按钮换行的难看效果，所以使用gridEditWidth可配置。操作区域可隐藏，部分页面中使用可能只是查询列表。show-overflow-tooltip可以在文字过长时，用省略号显示，我这里默认每个表格都使用该属性。可根据自己项目中的需求，修改代码为该属性可配置。需要注意的是，如果表格字段为空，鼠标hover时该格子有个小黑点的效果。可以考虑在代码中，判断字段为空时显示‘–’进行标识，也防止小黑点的出现。</p>
+<p>提供了获取列表数据的方法，新增和修改的方法，依赖于BaseDialogForm组件的应用，新增和修改时会复用同一个模态框，但是通过formTitle展示不一样的标题，最后保存时通过特殊字段id进行业务逻辑的区分。扩展的操作按钮，使用handleEmit方法进行统一处理，使用事件映射完成父子组件的通信。在具体使用时，可在父组件中使用this.$refs.crud.getData()在进行业务操作后，刷新列表数据。</p>
+<p>上诉组件源码只是提供了基本的实现思路，我在项目实际使用中，结合公司的定制化业务，实际还结合了很多组件的应用，包括查看详情模态框是根据新增和修改的动态表单进行默认生成展示，配置列表上方动态生成的高级搜索表单进行表格数据查询操作等等。具体的扩展大家可以根据实际业务进行定制化修改。</p>
+<p><strong>具体的使用实例会在最下方代码展示</strong></p>
+<h3 id="二、表格自定义列模板，依赖的expand-js的源码"><a href="#二、表格自定义列模板，依赖的expand-js的源码" class="headerlink" title="二、表格自定义列模板，依赖的expand.js的源码"></a>二、表格自定义列模板，依赖的expand.js的源码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">export default &#123;</span><br><span class="line">    name: &apos;TableExpand&apos;,</span><br><span class="line">    functional: true,</span><br><span class="line">    props: &#123;</span><br><span class="line">        row: Object,</span><br><span class="line">        render: Function,</span><br><span class="line">        index: Number,</span><br><span class="line">        column: &#123;</span><br><span class="line">            type: Object,</span><br><span class="line">            default: null</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    render: (h, ctx) =&gt; &#123;</span><br><span class="line">        const params = &#123;</span><br><span class="line">            row: ctx.props.row,</span><br><span class="line">            index: ctx.props.index</span><br><span class="line">        &#125;;</span><br><span class="line">        if (ctx.props.column) params.column = ctx.props.column;</span><br><span class="line">        return ctx.props.render(h, params);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="三、BaseDialogForm组件的源码"><a href="#三、BaseDialogForm组件的源码" class="headerlink" title="三、BaseDialogForm组件的源码"></a>三、BaseDialogForm组件的源码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;el-dialog</span><br><span class="line">    :title=&quot;title&quot;</span><br><span class="line">    :visible.sync=&quot;dialogVisible&quot;</span><br><span class="line">    :width=&quot;width?width:&apos;80%&apos;&quot;&gt;</span><br><span class="line">    &lt;el-form :model=&quot;formModel&quot; ref=&quot;configForm&quot; label-width=&quot;100px&quot;&gt;</span><br><span class="line">      &lt;el-row :gutter=&quot;16&quot;&gt;</span><br><span class="line">        &lt;el-col :span=&quot;item.span?item.span:8&quot; v-for=&quot;(item,index) in config&quot; :key=&quot;index&quot;&gt;</span><br><span class="line">          &lt;el-form-item</span><br><span class="line">            :prop=&quot;item.prop&quot;</span><br><span class="line">            :rules=&quot;item.rules&quot;</span><br><span class="line">            :label=&quot;item.label&quot;</span><br><span class="line">          &gt;</span><br><span class="line">            &lt;!--输入框表单类型--&gt;</span><br><span class="line">            &lt;el-input v-if=&quot;item.type ===&apos;text&apos;&quot; v-model=&quot;formData[item.prop]&quot;</span><br><span class="line">                      :placeholder=&quot;item.placeholder?item.placeholder:&apos;请输入&apos;&quot;&gt;&lt;/el-input&gt;</span><br><span class="line">            &lt;!--文本域表单类型--&gt;</span><br><span class="line">            &lt;el-input v-if=&quot;item.type === &apos;textarea&apos;&quot; type=&quot;textarea&quot; v-model=&quot;formData[item.prop]&quot;</span><br><span class="line">                      :placeholder=&quot;item.placeholder?item.placeholder:&apos;请输入&apos;&quot;&gt;&lt;/el-input&gt;</span><br><span class="line">            &lt;!--checkbox表单类型--&gt;</span><br><span class="line">            &lt;el-checkbox-group v-if=&quot;item.type === &apos;checkbox&apos;&quot; v-model=&quot;formData[item.prop]&quot;</span><br><span class="line">                               :placeholder=&quot;item.placeholder?item.placeholder:&apos;请选择&apos;&quot;&gt;</span><br><span class="line">              &lt;el-checkbox v-for=&quot;option in item.data&quot; :label=&quot;option.id&quot; :key=&quot;option.id&quot;&gt;&#123;&#123;option.name&#125;&#125;&lt;/el-checkbox&gt;</span><br><span class="line">            &lt;/el-checkbox-group&gt;</span><br><span class="line">            &lt;!--radio表单类型--&gt;</span><br><span class="line">            &lt;el-radio-group v-if=&quot;item.type === &apos;radio&apos;&quot; v-model=&quot;formData[item.prop]&quot;</span><br><span class="line">                            :placeholder=&quot;item.placeholder?item.placeholder:&apos;请选择&apos;&quot;&gt;</span><br><span class="line">              &lt;el-radio v-for=&quot;option in item.data&quot; :label=&quot;option.id&quot; :key=&quot;option.id&quot;&gt;&#123;&#123;option.name&#125;&#125;&lt;/el-radio&gt;</span><br><span class="line">            &lt;/el-radio-group&gt;</span><br><span class="line">            &lt;!--下拉选择类型--&gt;</span><br><span class="line">            &lt;el-select v-if=&quot;item.type === &apos;select&apos;&quot; v-model=&quot;formData[item.prop]&quot;</span><br><span class="line">                       :placeholder=&quot;item.placeholder?item.placeholder:&apos;请选择&apos;&quot;&gt;</span><br><span class="line">              &lt;el-option</span><br><span class="line">                v-for=&quot;option in item.data&quot;</span><br><span class="line">                :key=&quot;option.id&quot;</span><br><span class="line">                :label=&quot;option.name&quot;</span><br><span class="line">                :value=&quot;option.id&quot;&gt;</span><br><span class="line">              &lt;/el-option&gt;</span><br><span class="line">            &lt;/el-select&gt;</span><br><span class="line"></span><br><span class="line">            &lt;el-date-picker</span><br><span class="line">              v-if=&quot;item.type === &apos;datepicker&apos;&quot;</span><br><span class="line">              v-model=&quot;formData[item.prop]&quot;</span><br><span class="line">              type=&quot;date&quot;</span><br><span class="line">              :placeholder=&quot;item.placeholder?item.placeholder:&apos;请选择日期&apos;&quot;&gt;</span><br><span class="line">            &lt;/el-date-picker&gt;</span><br><span class="line"></span><br><span class="line">          &lt;/el-form-item&gt;</span><br><span class="line">        &lt;/el-col&gt;</span><br><span class="line">      &lt;/el-row&gt;</span><br><span class="line">    &lt;/el-form&gt;</span><br><span class="line"></span><br><span class="line">    &lt;span slot=&quot;footer&quot; class=&quot;dialog-footer&quot;&gt;</span><br><span class="line">    &lt;el-button @click=&quot;dialogVisible = false&quot;&gt;取 消&lt;/el-button&gt;</span><br><span class="line">    &lt;el-button type=&quot;primary&quot; @click=&quot;submitForm&quot;&gt;确 定&lt;/el-button&gt;</span><br><span class="line">  &lt;/span&gt;</span><br><span class="line">  &lt;/el-dialog&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">  export default &#123;</span><br><span class="line">    name: &quot;base-dialog-form&quot;,</span><br><span class="line">    props: [</span><br><span class="line">      &apos;title&apos;,</span><br><span class="line">      &apos;width&apos;,</span><br><span class="line">      &apos;visible&apos;,</span><br><span class="line">      &apos;config&apos;,</span><br><span class="line">      &apos;formData&apos;</span><br><span class="line">    ],</span><br><span class="line">    data() &#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        formModel: &#123;&#125;,</span><br><span class="line">        dialogVisible: false,</span><br><span class="line">        dialogTitle: &apos;&apos;,</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    mounted() &#123;</span><br><span class="line">      // 将组件上的属性赋值给当前组件内变量，因为props只能单向绑定,还需要监听属性值变化进行父子组件间交互</span><br><span class="line">      this.formModel = this.formData;</span><br><span class="line">      this.dialogVisible = this.visible;</span><br><span class="line">      this.dialogTitle = this.title;</span><br><span class="line">    &#125;,</span><br><span class="line">    methods: &#123;</span><br><span class="line">      // 提交表单数据</span><br><span class="line">      submitForm() &#123;</span><br><span class="line">        this.$refs.configForm.validate((valid) =&gt; &#123;</span><br><span class="line">          if (valid) &#123;</span><br><span class="line">            // 让父组件接收到响应数据</span><br><span class="line">            this.$emit(&apos;submit&apos;, this.formModel);</span><br><span class="line">            // 关闭模态框</span><br><span class="line">            this.dialogVisible = false;</span><br><span class="line">          &#125; else &#123;</span><br><span class="line">            console.log(&apos;error submit!!&apos;);</span><br><span class="line">            return false;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">      &#125;,</span><br><span class="line">      // 重置表单状态</span><br><span class="line">      resetForm() &#123;</span><br><span class="line">        if (this.$refs.configForm) &#123;</span><br><span class="line">          this.$refs.configForm.resetFields();</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      // 展示模态框</span><br><span class="line">      showDialog() &#123;</span><br><span class="line">        this.dialogVisible = true;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    watch: &#123;</span><br><span class="line">      /*实现表单数据的绑定，实时接收父组件的数据变化*/</span><br><span class="line">      formData() &#123;</span><br><span class="line">        this.formModel = this.formData;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">&lt;style rel=&quot;stylesheet/scss&quot; lang=&quot;scss&quot; scoped&gt;</span><br><span class="line">  .el-input&#123;</span><br><span class="line">    width: 100% !important;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  .el-select&#123;</span><br><span class="line">    width: 100% !important;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
+
+<p>上诉代码大家应该都能看懂，就是通过简单的config数组提供需要动态生成的表单配置，具体包含表单控件类型、对应的字段、验证规则、placeholder文字等等所需的配置，可根据自身情况进行扩展，此处只做简单的示例</p>
+<p>需要注意的是，在使用重置表单状态的方法中，需要预先判断组件实例是否存在，因为el-dialog的底层代码实现用了v-if，在第一次还未显示时，dom实际不存在，如果不进行判断直接使用的话，代码会报错。</p>
+<h3 id="四、使用示例之用户列表渲染"><a href="#四、使用示例之用户列表渲染" class="headerlink" title="四、使用示例之用户列表渲染"></a>四、使用示例之用户列表渲染</h3><p>页面代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;BaseCrud @download=&quot;download&quot; :apiService=&quot;userService&quot; :grid-config=&quot;configData.gridConfig&quot; :grid-btn-config=&quot;configData.gridBtnConfig&quot;</span><br><span class="line">              :grid-data=&quot;testData&quot;</span><br><span class="line">              :form-config=&quot;configData.formConfig&quot; :form-data=&quot;configData.formModel&quot; :grid-edit-width=&quot;200&quot;</span><br><span class="line">              form-title=&quot;用户&quot; :is-async=&quot;true&quot;&gt;</span><br><span class="line">    &lt;/BaseCrud&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">  import BaseCrud from &apos;@/components/BaseCrud/index.vue&apos;</span><br><span class="line">  import &#123;USER_CONFIG&#125; from &apos;./config&apos;</span><br><span class="line">  import &#123;userService&#125; from &apos;@/api/user.js&apos;</span><br><span class="line"></span><br><span class="line">  export default &#123;</span><br><span class="line">    components: &#123;</span><br><span class="line">      BaseCrud</span><br><span class="line">    &#125;,</span><br><span class="line">    data () &#123;</span><br><span class="line">      return &#123;</span><br><span class="line">        testData: [],</span><br><span class="line">        configData: USER_CONFIG,</span><br><span class="line">        userService: userService</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    name: &apos;user-list&apos;,</span><br><span class="line">    mounted () &#123;</span><br><span class="line">      this.testData = [</span><br><span class="line">        &#123;</span><br><span class="line">          id: &apos;1&apos;,</span><br><span class="line">          tel: &apos;15184318420&apos;,</span><br><span class="line">          name: &apos;小白&apos;,</span><br><span class="line">          email: &apos;412412@qq.com&apos;,</span><br><span class="line">          status: &apos;1&apos;,</span><br><span class="line">          create_time: &apos;2018-04-20&apos;,</span><br><span class="line">          expand: &apos;扩展信息一&apos;,</span><br><span class="line">          role: [&apos;2&apos;]</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          id: &apos;2&apos;,</span><br><span class="line">          tel: &apos;13777369283&apos;,</span><br><span class="line">          name: &apos;小红&apos;,</span><br><span class="line">          email: &apos;456465@qq.com&apos;,</span><br><span class="line">          status: &apos;0&apos;,</span><br><span class="line">          create_time: &apos;2018-03-23&apos;,</span><br><span class="line">          expand: &apos;hashashashas&apos;,</span><br><span class="line">          role: [&apos;1&apos;]</span><br><span class="line">        &#125;</span><br><span class="line">      ];</span><br><span class="line">    &#125;,</span><br><span class="line">    methods: &#123;</span><br><span class="line">      download(row)&#123;</span><br><span class="line">        console.log(&apos;点击了下载按钮&apos;,row);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>config配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line">export const USER_CONFIG = &#123;</span><br><span class="line">  gridConfig: [</span><br><span class="line">    &#123;label: &apos;用户ID&apos;, prop: &apos;id&apos;, width: &apos;100&apos;&#125;,</span><br><span class="line">    &#123;label: &apos;手机号(登录账号)&apos;, prop: &apos;tel&apos;&#125;,</span><br><span class="line">    &#123;label: &apos;邮箱&apos;, prop: &apos;email&apos;, width: &apos;100&apos;&#125;,</span><br><span class="line">    &#123;label: &apos;中文名&apos;, prop: &apos;name&apos;&#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      label: &apos;状态&apos;, prop: &apos;status&apos;, render: (h, params) =&gt; &#123;</span><br><span class="line">        if(params.row.status === &apos;0&apos;)&#123;</span><br><span class="line">          return h(&apos;el-tag&apos;, &#123;</span><br><span class="line">            props:&#123;</span><br><span class="line">              size:&apos;mini&apos;,</span><br><span class="line">              type:&apos;warning&apos;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;,&apos;正常&apos;);</span><br><span class="line">        &#125;else &#123;</span><br><span class="line">          return h(&apos;el-tag&apos;, &#123;</span><br><span class="line">            props:&#123;</span><br><span class="line">              size:&apos;mini&apos;,</span><br><span class="line">              type:&apos;success&apos;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;,&apos;禁用&apos;);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;label: &apos;创建时间&apos;, prop: &apos;create_time&apos;&#125;,</span><br><span class="line">    &#123;label: &apos;扩展信息&apos;, prop: &apos;expand&apos;&#125;</span><br><span class="line">  ],</span><br><span class="line">  // crud的模态框表单配置，可配置表单类型，验证规则，是否必填,col-span布局可通过span参数配置</span><br><span class="line">  formConfig: [</span><br><span class="line">    &#123;span: 12, label: &apos;手机号&apos;, prop: &apos;tel&apos;, type: &apos;text&apos;&#125;,</span><br><span class="line">    &#123;span: 12, label: &apos;中文名&apos;, prop: &apos;name&apos;, type: &apos;text&apos;&#125;,</span><br><span class="line">    &#123;span: 12, label: &apos;邮箱&apos;, prop: &apos;email&apos;, type: &apos;text&apos;&#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      span: 12, label: &apos;角色&apos;,</span><br><span class="line">      prop: &apos;roleIdList&apos;,</span><br><span class="line">      type: &apos;checkbox&apos;,</span><br><span class="line">      data: [&#123;name: &apos;角色一&apos;, id: &apos;1&apos;&#125;, &#123;name: &apos;角色二&apos;, id: &apos;2&apos;&#125;],</span><br><span class="line">      rules: &#123; type: &apos;array&apos;, required: true, message: &apos;请选择角色&apos;, trigger: &apos;change&apos; &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      span: 12, label: &apos;状态&apos;,</span><br><span class="line">      prop: &apos;status&apos;,</span><br><span class="line">      type: &apos;radio&apos;,</span><br><span class="line">      data: [&#123;name: &apos;正常&apos;, id: 1&#125;, &#123;name: &apos;禁用&apos;, id: 0&#125;],</span><br><span class="line">      rules: &#123;required: true, message: &apos;请选择角色状态&apos;, trigger: &apos;change&apos;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;span: 24, label: &apos;备注&apos;, prop: &apos;expand&apos;, type: &apos;textarea&apos;&#125;</span><br><span class="line">  ],</span><br><span class="line">  // crud的操作按钮配置，基础按钮有添加、修改、删除、查看，还可以配置扩展按钮</span><br><span class="line">  gridBtnConfig: &#123;</span><br><span class="line">    create: true, update: true, delete: true, view: false,</span><br><span class="line">    expands: [</span><br><span class="line">      &#123; name: &apos;下载按钮&apos;, emitName: &apos;download&apos;, type: &apos;primary&apos; &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;,</span><br><span class="line">  // 表单基础数据类型，需要预先赋值</span><br><span class="line">  formModel: &#123;</span><br><span class="line">    id: &apos;&apos;,</span><br><span class="line">    tel: &apos;&apos;,</span><br><span class="line">    name: &apos;&apos;,</span><br><span class="line">    email: &apos;&apos;,</span><br><span class="line">    status: &apos;&apos;,</span><br><span class="line">    create_time: &apos;&apos;,</span><br><span class="line">    expand: &apos;&apos;,</span><br><span class="line">    roleIdList: []</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>以上是用户列表的基础配置使用示例，数据使用的是测试数据。在实际使用中应该是通过apiService从服务器端请求数据。下列截图展示了基础的配置使用效果展示。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4693648-ce67eddc06f7bf6d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="QQ浏览器截图20180829225231.png"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4693648-654e6f6e35d9cbc0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="QQ浏览器截图20180829225250.png"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/4693648-35baf5433f777bc6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="QQ浏览器截图20180829225305.png"></p>
+<h3 id="五、总结"><a href="#五、总结" class="headerlink" title="五、总结"></a>五、总结</h3><p>上诉示例是基础业务的实现代码，由于实际业务中代码量稍大，逻辑稍微复杂，并未在此处进行完全展示。此处代码为删减版，可能有一些问题，可以留言进行探讨解决。表格配置实际使用中，应该会有使用过滤器的情况，还有我在项目中实际使用时，有表格多选的情况，表格内操作按钮，和表格外按钮的配置，以及涉及批量操作的如批量删除等业务。若后期大家实际需要，我会陆续分享实现方案。<br>如果各位大牛有更好的实现方案，也希望不吝赐教，大家共同进步。<br>最后，希望走过路过的朋友能个给个赞呗，谢谢~~</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://constantinel.github.io/2019/06/28/19062802/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content>
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="蜀城走马的个人空间">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/28/19062802/" itemprop="url">VUE通用指令、过滤器的封装和使用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-28T16:21:01+08:00">
+                2019-06-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="一、指令的封装"><a href="#一、指令的封装" class="headerlink" title="一、指令的封装"></a>一、指令的封装</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">import Vue from &apos;vue&apos;;</span><br><span class="line"></span><br><span class="line">export const viewImage = Vue.directive(&apos;view-image&apos;, &#123;</span><br><span class="line">    // 当被绑定的元素插入到 DOM 中时……</span><br><span class="line">    inserted: function (el) &#123;</span><br><span class="line">        el.style.cursor = &apos;pointer&apos;;</span><br><span class="line">        el.title = &apos;点击可查看大图&apos;;</span><br><span class="line"></span><br><span class="line">        // 图片</span><br><span class="line">        let img = document.createElement(&apos;img&apos;);</span><br><span class="line">        // 图片外壳</span><br><span class="line">        let imgBox = document.createElement(&apos;div&apos;);</span><br><span class="line">        // 这个查看图片包含框</span><br><span class="line">        let div = document.createElement(&apos;div&apos;);</span><br><span class="line">        let closeBox = document.createElement(&apos;span&apos;);</span><br><span class="line">        // 查看大图的关闭按钮</span><br><span class="line">        closeBox.innerText = &apos;×&apos;;</span><br><span class="line">        closeBox.className = &apos;close&apos;;</span><br><span class="line"></span><br><span class="line">        div.className = &apos;view-image-container&apos;;</span><br><span class="line">        imgBox.appendChild(img);</span><br><span class="line">        imgBox.appendChild(closeBox);</span><br><span class="line">        div.appendChild(imgBox);</span><br><span class="line">        div.style.visibility = &apos;hidden&apos;;</span><br><span class="line"></span><br><span class="line">        document.body.appendChild(div);</span><br><span class="line"></span><br><span class="line">        el.addEventListener(&apos;click&apos;, function () &#123;</span><br><span class="line">            img.src = el.src;</span><br><span class="line">            div.style.visibility = &apos;visible&apos;;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        // 点击关闭按钮隐藏查看大图</span><br><span class="line">        closeBox.addEventListener(&apos;click&apos;, function () &#123;</span><br><span class="line">            div.style.visibility = &apos;hidden&apos;;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>Vue2.0 中，代码复用和抽象的主要形式是组件。然而，有的情况下，你仍然需要对普通 DOM 元素进行底层操作，这时候就会用到自定义指令。上面是我写的一个查看大图的指令，主要应用场景是对使用图片标签展示的地方，有查看大图的需要，指令通过绑定指令v-view-image就可以实现点击查看大图的效果。</li>
+<li>inserted关键字是自定义指令中的钩子函数（<a href="https://cn.vuejs.org/v2/guide/custom-directive.html#%E9%92%A9%E5%AD%90%E5%87%BD%E6%95%B0" target="_blank" rel="noopener">点击此处查看钩子函数详解</a>），会在指令被绑定元素插入父节点时调用。钩子函数中的参数，可以查阅文档进行对应应用场景的使用。</li>
+<li>我在该自定义指令中，主要使用对el元素对象的操作，基本实现逻辑为 获取到被绑定元素的src图片路径，然后展示到查看大图元素中的图片路径。</li>
+<li>只需在main.js文件中对指令进行引入，例如 import { viewImage } from ‘./directive/view-image’ 就可以在全局正常使用，不需要再在单个组件中引入使用。具体使用方法例如：<img src="test.png" alt="测试图片" v-view-image>就可以使用。</li>
+</ol>
+<h2 id="二、过滤器的封装"><a href="#二、过滤器的封装" class="headerlink" title="二、过滤器的封装"></a>二、过滤器的封装</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Vue.filter(&apos;idToName&apos;, function(id, arr) &#123;</span><br><span class="line">  // 如果传入id为空，返回空字符串</span><br><span class="line">  if (!value) return &apos;&apos;;</span><br><span class="line">  // 如果基础数组数据为空或者未定义，直接返回id值</span><br><span class="line">  if (!arr || arr.length === 0) &#123;</span><br><span class="line">    return id;</span><br><span class="line">  &#125;</span><br><span class="line">  let name = &apos;&apos;;</span><br><span class="line">  arr.forEach(item =&gt; &#123;</span><br><span class="line">    // 获取到所属name，直接return跳出遍历</span><br><span class="line">    if (item.id === id) &#123;</span><br><span class="line">      return name = item.name;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  return name;</span><br><span class="line"></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>在vue项目中，会有常用场景需要对数据做处理，这时候就可以应用过滤器进行使用。推荐使用上述方法进行全局过滤器定义，相较于对组件内定义来说，优点是可以全局使用，避免重复代码，可以放在同一个文件夹中进行统一维护处理。</li>
+<li>上述过滤器是常用的对例如字典数据进行id转换为name的处理，需要传入的参数为id和数据源数组。具体使用方法为：<code>id | idToName(arr)</code>，需要提醒的一点是，v-model双向绑定指令不能使用过滤器。被过滤的值，会被当成默认的第一个参数传入，所以此处过滤器的传入参数只需一个参数arr。详细的过滤器使用及参数使用概念可以参考<a href="https://cn.vuejs.org/v2/guide/filters.html" target="_blank" rel="noopener">官方文档</a></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://constantinel.github.io/2019/06/28/19062801/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content>
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="蜀城走马的个人空间">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/28/19062801/" itemprop="url">VUE的某些常见问题及解决方法</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-28T16:18:01+08:00">
+                2019-06-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="VUE的某些常见问题及解决方法"><a href="#VUE的某些常见问题及解决方法" class="headerlink" title="VUE的某些常见问题及解决方法"></a>VUE的某些常见问题及解决方法</h1><h2 id="双向绑定数据，界面未渲染？"><a href="#双向绑定数据，界面未渲染？" class="headerlink" title="双向绑定数据，界面未渲染？"></a>双向绑定数据，界面未渲染？</h2><p>最近做vue项目的过程中，经常碰到会有双向绑定数据，data中定义的数据进行变动时，页面实际展示层未改变。常见的应用场景有下面几种：</p>
+<ol>
+<li>form表单里面，修改表单的时候，分明预置了数据，但是没有显示 </li>
+<li>element-ui常用的select组件，下拉选择了一个元素，但是选中框中并没有显示</li>
+<li>自己写选中切换的组件，点击后触发active的样式，触发的字段为checked，但是checked分明自己已经改变了值，样式就是没有改变</li>
+</ol>
+<p>上诉几种情况，实际原因都是vue的双向绑定机制，对于对象的定义，对应的字段必须预先定义，否则无法触发vue的监听机制。由于我之前使用angular框架，自然养成了习惯就是对表单数据保存，会直接用<code>formData:{}</code> 但是这在vue中是行不通的。</p>
+<p>如果表单中有例如名称、电话号码两个字段，必须声明<code>formData:{name:&#39;&#39;,tel:&#39;&#39;}</code> 这才是vue中的data正常的声明定义方式。所以上诉问题点1、2都是该问题造成的。</p>
+<p>上诉情况三，我们一般进行代码书写方式会如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取预定义数据</span></span><br><span class="line"><span class="keyword">let</span> arr = [&#123;<span class="attr">id</span>:<span class="number">1</span>,<span class="attr">name</span>:<span class="string">'选项一'</span>&#125;,&#123;<span class="attr">id</span>:<span class="number">2</span>,<span class="attr">name</span>:<span class="string">'选项二'</span>&#125;];</span><br><span class="line"><span class="comment">// 默认选中第一个</span></span><br><span class="line">arr[<span class="number">0</span>].checked = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 选中项的函数</span></span><br><span class="line">clickItem(data)&#123;</span><br><span class="line">  <span class="comment">// 取消其他所有项的选中状态，选中当前项</span></span><br><span class="line">  arr.forEach(<span class="function"><span class="params">item</span>=&gt;</span>&#123;</span><br><span class="line">    item.checked = <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">if</span>(data.id === item.id)&#123;</span><br><span class="line">      item.checked = <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述方式就会造成，进行点击选中项切换时，由于arr里面的不是每一项都有checked字段，造成数据变动时，界面渲染未改变的情况。处理方法也很简单，对arr数组数据进行处理，保证初始化时都有checked字段就行了。</p>
+<p>所以，一定不要偷懒，遵照官方规范进行开发，哈哈<del>~</del></p>
+<h2 id="使用element-ui的弹窗组件，第三方地图、图表没有正常显示"><a href="#使用element-ui的弹窗组件，第三方地图、图表没有正常显示" class="headerlink" title="使用element-ui的弹窗组件，第三方地图、图表没有正常显示"></a>使用element-ui的弹窗组件，第三方地图、图表没有正常显示</h2><p>实际项目中，很多时候会用到在弹窗里面实现一些操作dom的功能，比如常见的弹窗里面进行地图选点，或者在弹窗中进行echarts的图表渲染。如果你使用element-ui的情况下，你会发现为什么第一次打开弹窗的时候想要的地图或者图表并没有渲染出来？</p>
+<p>实际你看了element的源码就知道了，它对el-dialog弹窗组件进行封装的时候，组件模板的这一行代码<code>&lt;div class=&quot;el-dialog__body&quot; v-if=&quot;rendered&quot;&gt;&lt;slot&gt;&lt;/slot&gt;&lt;/div&gt;</code> 弹窗内容渲染条件用的是v-if，v-if和v-show的区别大家应该都了解，就不赘述了（实在不知道百度<del>~</del>），v-if为false的时候，dom并不会实际存在，当你使用document.getElementById()去查找弹窗体的用于展示地图、图表的dom元素也是获取不到的。</p>
+<p>那么问题找到了，怎么解决？自己写要保持样式一致，浪费开发效率，最简单的方法就是将element-ui源码的dialog组件代码，在自己的项目中写一个自定义组件，将v-if改成v-show就行了。下面是我自己修改的代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;transition name=<span class="string">"dialog-fade"</span>&gt;</span><br><span class="line">        &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"el-dialog__wrapper"</span> v-show=<span class="string">"visible"</span> @click.self=<span class="string">"handleWrapperClick"</span>&gt;</span><br><span class="line">            &lt;div</span><br><span class="line">                    <span class="class"><span class="keyword">class</span></span>=<span class="string">"el-dialog"</span></span><br><span class="line">                    :<span class="class"><span class="keyword">class</span></span>=<span class="string">"[&#123; 'is-fullscreen': fullscreen, 'el-dialog--center': center &#125;, customClass]"</span></span><br><span class="line">                    ref=<span class="string">"dialog"</span></span><br><span class="line">                    :style=<span class="string">"style"</span>&gt;</span><br><span class="line">                &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"el-dialog__header"</span>&gt;</span><br><span class="line">                    &lt;slot name=<span class="string">"title"</span>&gt;</span><br><span class="line">                        &lt;span <span class="class"><span class="keyword">class</span></span>=<span class="string">"el-dialog__title"</span>&gt;&#123;&#123; title &#125;&#125;&lt;<span class="regexp">/span&gt;</span></span><br><span class="line"><span class="regexp">                    &lt;/</span>slot&gt;</span><br><span class="line">                    &lt;button</span><br><span class="line">                            type=<span class="string">"button"</span></span><br><span class="line">                            <span class="class"><span class="keyword">class</span></span>=<span class="string">"el-dialog__headerbtn"</span></span><br><span class="line">                            aria-label=<span class="string">"Close"</span></span><br><span class="line">                            v-<span class="keyword">if</span>=<span class="string">"showClose"</span></span><br><span class="line">                            @click=<span class="string">"handleClose"</span>&gt;</span><br><span class="line">                        &lt;i <span class="class"><span class="keyword">class</span></span>=<span class="string">"el-dialog__close el-icon el-icon-close"</span>&gt;<span class="xml"><span class="tag">&lt;/<span class="name">i</span>&gt;</span></span></span><br><span class="line">                    &lt;<span class="regexp">/button&gt;</span></span><br><span class="line"><span class="regexp">                &lt;/</span>div&gt;</span><br><span class="line">                &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"el-dialog__body"</span> v-show=<span class="string">"rendered"</span>&gt;<span class="xml"><span class="tag">&lt;<span class="name">slot</span>&gt;</span><span class="tag">&lt;/<span class="name">slot</span>&gt;</span></span><span class="xml"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">                &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"el-dialog__footer"</span> v-show=<span class="string">"$slots.footer"</span>&gt;</span><br><span class="line">                    &lt;slot name=<span class="string">"footer"</span>&gt;<span class="xml"><span class="tag">&lt;/<span class="name">slot</span>&gt;</span></span></span><br><span class="line">                &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">            &lt;/</span>div&gt;</span><br><span class="line">        &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">    &lt;/</span>transition&gt;</span><br><span class="line">&lt;<span class="regexp">/template&gt;</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">&lt;script&gt;</span></span><br><span class="line"><span class="regexp">    import Popup from 'element-ui/</span>src/utils/popup<span class="string">';</span></span><br><span class="line"><span class="string">    import Migrating from '</span>element-ui/src/mixins/migrating<span class="string">';</span></span><br><span class="line"><span class="string">    import emitter from '</span>element-ui/src/mixins/emitter<span class="string">';</span></span><br><span class="line"><span class="string">    export default &#123;</span></span><br><span class="line"><span class="string">        name: '</span>SelfDialog<span class="string">',</span></span><br><span class="line"><span class="string">        mixins: [Popup, emitter, Migrating],</span></span><br><span class="line"><span class="string">        props: &#123;</span></span><br><span class="line"><span class="string">            title: &#123;</span></span><br><span class="line"><span class="string">                type: String,</span></span><br><span class="line"><span class="string">                default: '</span><span class="string">'</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            modal: &#123;</span></span><br><span class="line"><span class="string">                type: Boolean,</span></span><br><span class="line"><span class="string">                default: true</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            modalAppendToBody: &#123;</span></span><br><span class="line"><span class="string">                type: Boolean,</span></span><br><span class="line"><span class="string">                default: true</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            appendToBody: &#123;</span></span><br><span class="line"><span class="string">                type: Boolean,</span></span><br><span class="line"><span class="string">                default: false</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            lockScroll: &#123;</span></span><br><span class="line"><span class="string">                type: Boolean,</span></span><br><span class="line"><span class="string">                default: true</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            closeOnClickModal: &#123;</span></span><br><span class="line"><span class="string">                type: Boolean,</span></span><br><span class="line"><span class="string">                default: true</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            closeOnPressEscape: &#123;</span></span><br><span class="line"><span class="string">                type: Boolean,</span></span><br><span class="line"><span class="string">                default: true</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            showClose: &#123;</span></span><br><span class="line"><span class="string">                type: Boolean,</span></span><br><span class="line"><span class="string">                default: true</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            width: String,</span></span><br><span class="line"><span class="string">            fullscreen: Boolean,</span></span><br><span class="line"><span class="string">            customClass: &#123;</span></span><br><span class="line"><span class="string">                type: String,</span></span><br><span class="line"><span class="string">                default: '</span><span class="string">'</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            top: &#123;</span></span><br><span class="line"><span class="string">                type: String,</span></span><br><span class="line"><span class="string">                default: '</span><span class="number">15</span>vh<span class="string">'</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            beforeClose: Function,</span></span><br><span class="line"><span class="string">            center: &#123;</span></span><br><span class="line"><span class="string">                type: Boolean,</span></span><br><span class="line"><span class="string">                default: false</span></span><br><span class="line"><span class="string">            &#125;</span></span><br><span class="line"><span class="string">        &#125;,</span></span><br><span class="line"><span class="string">        data() &#123;</span></span><br><span class="line"><span class="string">            return &#123;</span></span><br><span class="line"><span class="string">                closed: false</span></span><br><span class="line"><span class="string">            &#125;;</span></span><br><span class="line"><span class="string">        &#125;,</span></span><br><span class="line"><span class="string">        watch: &#123;</span></span><br><span class="line"><span class="string">            visible(val) &#123;</span></span><br><span class="line"><span class="string">                if (val) &#123;</span></span><br><span class="line"><span class="string">                    this.closed = false;</span></span><br><span class="line"><span class="string">                    this.$emit('</span>open<span class="string">');</span></span><br><span class="line"><span class="string">                    this.$el.addEventListener('</span>scroll<span class="string">', this.updatePopper);</span></span><br><span class="line"><span class="string">                    this.$nextTick(() =&gt; &#123;</span></span><br><span class="line"><span class="string">                        this.$refs.dialog.scrollTop = 0;</span></span><br><span class="line"><span class="string">                    &#125;);</span></span><br><span class="line"><span class="string">                    if (this.appendToBody) &#123;</span></span><br><span class="line"><span class="string">                        document.body.appendChild(this.$el);</span></span><br><span class="line"><span class="string">                    &#125;</span></span><br><span class="line"><span class="string">                &#125; else &#123;</span></span><br><span class="line"><span class="string">                    this.$el.removeEventListener('</span>scroll<span class="string">', this.updatePopper);</span></span><br><span class="line"><span class="string">                    if (!this.closed) this.$emit('</span>close<span class="string">');</span></span><br><span class="line"><span class="string">                &#125;</span></span><br><span class="line"><span class="string">            &#125;</span></span><br><span class="line"><span class="string">        &#125;,</span></span><br><span class="line"><span class="string">        computed: &#123;</span></span><br><span class="line"><span class="string">            style() &#123;</span></span><br><span class="line"><span class="string">                let style = &#123;&#125;;</span></span><br><span class="line"><span class="string">                if (this.width) &#123;</span></span><br><span class="line"><span class="string">                    style.width = this.width;</span></span><br><span class="line"><span class="string">                &#125;</span></span><br><span class="line"><span class="string">                if (!this.fullscreen) &#123;</span></span><br><span class="line"><span class="string">                    style.marginTop = this.top;</span></span><br><span class="line"><span class="string">                &#125;</span></span><br><span class="line"><span class="string">                return style;</span></span><br><span class="line"><span class="string">            &#125;</span></span><br><span class="line"><span class="string">        &#125;,</span></span><br><span class="line"><span class="string">        methods: &#123;</span></span><br><span class="line"><span class="string">            getMigratingConfig() &#123;</span></span><br><span class="line"><span class="string">                return &#123;</span></span><br><span class="line"><span class="string">                    props: &#123;</span></span><br><span class="line"><span class="string">                        '</span>size<span class="string">': '</span>size is removed.<span class="string">'</span></span><br><span class="line"><span class="string">                    &#125;</span></span><br><span class="line"><span class="string">                &#125;;</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            handleWrapperClick() &#123;</span></span><br><span class="line"><span class="string">                if (!this.closeOnClickModal) return;</span></span><br><span class="line"><span class="string">                this.handleClose();</span></span><br><span class="line"><span class="string">            &#125;,</span></span><br><span class="line"><span class="string">            handleClose() &#123;</span></span><br><span class="line"><span class="string">                if (typeof this.beforeClose === '</span><span class="function"><span class="keyword">function</span>') </span>&#123;</span><br><span class="line">                    <span class="keyword">this</span>.beforeClose(<span class="keyword">this</span>.hide);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">this</span>.hide();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;,</span><br><span class="line">            hide(cancel) &#123;</span><br><span class="line">                <span class="keyword">if</span> (cancel !== <span class="literal">false</span>) &#123;</span><br><span class="line">                    <span class="keyword">this</span>.$emit(<span class="string">'update:visible'</span>, <span class="literal">false</span>);</span><br><span class="line">                    <span class="keyword">this</span>.$emit(<span class="string">'close'</span>);</span><br><span class="line">                    <span class="keyword">this</span>.closed = <span class="literal">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;,</span><br><span class="line">            updatePopper() &#123;</span><br><span class="line">                <span class="keyword">this</span>.broadcast(<span class="string">'ElSelectDropdown'</span>, <span class="string">'updatePopper'</span>);</span><br><span class="line">                <span class="keyword">this</span>.broadcast(<span class="string">'ElDropdownMenu'</span>, <span class="string">'updatePopper'</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        mounted() &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">this</span>.visible) &#123;</span><br><span class="line">                <span class="keyword">this</span>.rendered = <span class="literal">true</span>;</span><br><span class="line">                <span class="keyword">this</span>.open();</span><br><span class="line">                <span class="keyword">if</span> (<span class="keyword">this</span>.appendToBody) &#123;</span><br><span class="line">                    <span class="built_in">document</span>.body.appendChild(<span class="keyword">this</span>.$el);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        destroyed() &#123;</span><br><span class="line">            <span class="comment">// if appendToBody is true, remove DOM node after destroy</span></span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">this</span>.appendToBody &amp;&amp; <span class="keyword">this</span>.$el &amp;&amp; <span class="keyword">this</span>.$el.parentNode) &#123;</span><br><span class="line">                <span class="keyword">this</span>.$el.parentNode.removeChild(<span class="keyword">this</span>.$el);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>把组件名自定义，我改的是SelfDialog，是不是很简单？</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://constantinel.github.io/2019/06/27/19062805/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content>
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="蜀城走马的个人空间">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/27/19062805/" itemprop="url">ionic2常见问题及解决方案</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-27T16:57:50+08:00">
+                2019-06-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="ionic2常见问题及解决方案"><a href="#ionic2常见问题及解决方案" class="headerlink" title="ionic2常见问题及解决方案"></a>ionic2常见问题及解决方案</h1><h3 id="一、app启动白屏的问题"><a href="#一、app启动白屏的问题" class="headerlink" title="一、app启动白屏的问题"></a>一、app启动白屏的问题</h3><p>​         app启动后大概有几秒的白屏，才会显示首页。解决方法有前辈放了，这边贴个链接<a href="http://www.cnblogs.com/Ave-Maria/p/6277389.html" target="_blank" rel="noopener">解决方法</a>。</p>
+<h3 id="二、gradle下载失败导致执行打包命令时报错"><a href="#二、gradle下载失败导致执行打包命令时报错" class="headerlink" title="二、gradle下载失败导致执行打包命令时报错"></a>二、gradle下载失败导致执行打包命令时报错</h3><p>​    <code>ionic build android</code> 是通过gradle编译，而且会在线下载gradle，墙内基本是下不了的，这就需要手动下载项目需要的gradle版本。 查看android platform下的build.gradle文件，看当前版本需要的gradle version。 下载成功后，放在<code>myApp\platforms\android\gradle</code>文件夹下， 命令行输入<code>set CORDOVA_ANDROID_GRADLE_DISTRIBUTION_URL=../gradle-2.14.1-all.zip</code>(参考自简书作者：charles0427链接：<a href="http://www.jianshu.com/p/408254d76e74" target="_blank" rel="noopener">http://www.jianshu.com/p/408254d76e74</a>)</p>
+<h3 id="三、ionic2中扩展自定义图标"><a href="#三、ionic2中扩展自定义图标" class="headerlink" title="三、ionic2中扩展自定义图标"></a>三、ionic2中扩展自定义图标</h3><p>​    ionic2开发app的实际使用中，ionic2官方的图标是不够用的，流行常用的图标都可以在阿里巴巴矢量图标中找到。需要扩展图标<code>&lt;ion-icon name=&quot;my-icon&quot;&gt;&lt;/ion-icon&gt;</code>来使用，这里有详细的解决办法，亲身实践后可以完美的使用(<a href="http://blog.csdn.net/u010730897/article/details/53906285?utm_source=itdadao&utm_medium=referral" target="_blank" rel="noopener">详情请点击</a>)。</p>
+<h3 id="四、ionic2自定义处理返回按钮"><a href="#四、ionic2自定义处理返回按钮" class="headerlink" title="四、ionic2自定义处理返回按钮"></a>四、ionic2自定义处理返回按钮</h3><p>​    APP开发过程中，有时需要自定义处理返回按钮的行为。一种方法是使用<code>hideBackButton=&quot;true&quot;</code>隐藏app页面上自带返回按钮，然后自写返回按钮控制点击事件。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ion-header</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">ion-navbar</span> <span class="attr">hideBackButton</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ion-buttons</span> <span class="attr">left</span> (<span class="attr">click</span>)=<span class="string">"selfGoBack()"</span> &gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">button</span> <span class="attr">ion-button</span> <span class="attr">icon-only</span> <span class="attr">class</span>=<span class="string">"selfBack"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ion-icon</span> <span class="attr">name</span>=<span class="string">"selfBack"</span>&gt;</span><span class="tag">&lt;/<span class="name">ion-icon</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">ion-buttons</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">ion-navbar</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ion-header</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>​    但是，上述方法并不能控制安卓手机实体返回按键。这时，就需要下列方法来处理页面的返回了：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//注册返回按键事件</span></span><br><span class="line">      <span class="keyword">this</span>.platform.registerBackButtonAction((): <span class="function"><span class="params">any</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> activeVC = <span class="keyword">this</span>.nav.getActive();</span><br><span class="line">        <span class="keyword">let</span> page = activeVC.instance;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (activeVC.component.name == <span class="string">'HomeComponent'</span>) &#123;</span><br><span class="line">          <span class="keyword">this</span>.platform.exitApp();</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;, <span class="number">101</span>);</span><br></pre></td></tr></table></figure>
+
+<p>​    上述方法中，需要在app.component.ts文件中注册返回按键事件。在我的实际使用中，我整个项目中有一个HomeComponent组件，也是我的首页。我需要在当前激活页面时，点击返回就退出app。判断条件我是根据取到activeVc上面的组件名，使用使用中根据自己的需要可以使用更多的参数或值。参数中的值101定义的是返回键行为的优先级，详情可<a href="http://blog.csdn.net/tiramisu_ljh/article/details/53100959" target="_blank" rel="noopener">点击此处了解</a>。</p>
+<h3 id="五、开发安卓版app时，搜索成功页面未刷新"><a href="#五、开发安卓版app时，搜索成功页面未刷新" class="headerlink" title="五、开发安卓版app时，搜索成功页面未刷新"></a>五、开发安卓版app时，搜索成功页面未刷新</h3><p>​    实际应用场景是我做了一个可实时搜索的列表页面，用于选择模态框。HTML代码如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ion-header</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">ion-navbar</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ion-title</span>&gt;</span>选择&#123;&#123;title&#125;&#125;<span class="tag">&lt;/<span class="name">ion-title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ion-buttons</span> <span class="attr">left</span> (<span class="attr">click</span>)=<span class="string">"closeModal()"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">button</span> <span class="attr">ion-button</span> <span class="attr">icon-only</span> <span class="attr">clear</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ion-icon</span> <span class="attr">name</span>=<span class="string">"md-arrow-back"</span>&gt;</span><span class="tag">&lt;/<span class="name">ion-icon</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">ion-buttons</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">ion-navbar</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ion-header</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">ion-content</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- &lt;ion-refresher *ngIf="hasMore" (ionRefresh)="getData($event)"&gt;</span></span><br><span class="line"><span class="comment">    &lt;ion-refresher-content&gt;&lt;/ion-refresher-content&gt;</span></span><br><span class="line"><span class="comment">  &lt;/ion-refresher&gt; --&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">ion-list</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ion-item-group</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">ion-item-divider</span> <span class="attr">color</span>=<span class="string">"light"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ion-searchbar</span></span></span><br><span class="line"><span class="tag">          <span class="attr">placeholder</span>=<span class="string">"搜索名称"</span></span></span><br><span class="line"><span class="tag">          [(<span class="attr">ngModel</span>)]=<span class="string">"keyword"</span></span></span><br><span class="line"><span class="tag">          (<span class="attr">ionInput</span>)=<span class="string">"onInput($event)"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">ion-searchbar</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">ion-item-divider</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">ion-item</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ion-row</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">ion-col</span> <span class="attr">width-33</span>&gt;</span>编号<span class="tag">&lt;/<span class="name">ion-col</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">ion-col</span> <span class="attr">width-67</span>&gt;</span>&#123;&#123;title&#125;&#125;名称<span class="tag">&lt;/<span class="name">ion-col</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">ion-row</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">ion-item</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">ion-item</span> *<span class="attr">ngFor</span>=<span class="string">"let item of ableSelected"</span> (<span class="attr">click</span>)=<span class="string">"chooseItem(item)"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ion-row</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">ion-col</span> <span class="attr">width-33</span>&gt;</span>&#123;&#123;item.id&#125;&#125;<span class="tag">&lt;/<span class="name">ion-col</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">ion-col</span> <span class="attr">width-67</span>&gt;</span>&#123;&#123;item.name&#125;&#125;<span class="tag">&lt;/<span class="name">ion-col</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">ion-row</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">ion-item</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">ion-item-group</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">ion-list</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="tag">&lt;<span class="name">ion-infinite-scroll</span> (<span class="attr">ionInfinite</span>)=<span class="string">"getData($event)"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">ion-infinite-scroll-content</span> <span class="attr">loadingSpinner</span>=<span class="string">"bubbles"</span></span></span><br><span class="line"><span class="tag">      <span class="attr">loadingText</span>=<span class="string">"加载中 ..."</span>&gt;</span><span class="tag">&lt;/<span class="name">ion-infinite-scroll-content</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">ion-infinite-scroll</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">ion-content</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>​    该页面用于选择数据，当前页面有实时搜索数据和上拉刷新加载更多数据的功能，都是通过getData调用请求异步获取。问题点在于执行<code>ionic serve</code>在浏览器测试的时候，搜索功能很完美，但是在真机上测试时，输入文字进行名称筛选数据，请求成功展示数据更新，页面展示的列表缓存住，并未刷新页面。困扰了很久，最后找到方法。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123;ChangeDetectorRef&#125; <span class="keyword">from</span> <span class="string">'@angular/core'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">SelectModalComponent</span>()</span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(public changeDetectorRef: ChangeDetectorRef) &#123;</span><br><span class="line">    </span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  getData()&#123;</span><br><span class="line">    <span class="comment">// 在数据更新后调用，更新页面防止页面缓存</span></span><br><span class="line">  	<span class="keyword">this</span>.changeDetectorRef.detectChanges();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>​    在异步请求获取数据成功后，调用ChangeDetectorRef的detectChanges方法，可以解决页面缓存的问题。</p>
+<h3 id="六、iOS端开发使用wkwebview替换uiwebview优化app性能"><a href="#六、iOS端开发使用wkwebview替换uiwebview优化app性能" class="headerlink" title="六、iOS端开发使用wkwebview替换uiwebview优化app性能"></a>六、iOS端开发使用wkwebview替换uiwebview优化app性能</h3><p>​    适用ionic2开发ios端app的实际过程中，由于uiwebview浏览器技术极大的占用内存，会存在很多导致应用崩溃的情况。例如拍照保存在本地，写了一个查看已拍照图片的页面，图片一多进去页面就导致应用崩溃闪退。还有就是数据量大的列表，滑动浏览非常不流畅卡顿。通过使用wkwebview插件替换uiwebview的使用，亲测在app使用中性能提高不是一点半点，崩溃率也大大降低。详细请<a href="http://blog.csdn.net/mygrilzhuyulin/article/details/52689634" target="_blank" rel="noopener">点击此处查看</a></p>
+<p>​    但是，上述方案有一个遗留问题，就是wkwebview技术实际是使用谷歌webkit的内核，在ios上会有取不到本地沙盒文件的bug。如果在app中使用img标签的方式，展示设备本地图片的话无法展示。我们在项目中的解决方案是写了一个调用原生设备展示图片的插件，，，真是大写的尴尬<del>~</del></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://constantinel.github.io/2019/06/26/first/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content>
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="蜀城走马的个人空间">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/06/26/first/" itemprop="url">前言</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-26T00:00:00+08:00">
+                2019-06-26
               </time>
             
 
@@ -386,14 +1068,23 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">1</span>
-                  <span class="site-state-item-name">posts</span>
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">日志</span>
                 </a>
               </div>
             
 
             
 
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
             
 
           </nav>
@@ -427,28 +1118,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
-  <span class="with-love">
-    <i class="fa fa-user"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder"></span>
-
-  
-</div>
-
-
-  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
-
-
-
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
-
-
-
+        
 
         
 
@@ -544,6 +1214,13 @@
 
   
   
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
 
   
 

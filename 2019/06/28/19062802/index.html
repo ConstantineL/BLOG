@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Vue,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="一、指令的封装1234567891011121314151617181920212223242526272829303132333435363738import Vue from &amp;apos;vue&amp;apos;;export const viewImage = Vue.directive(&amp;apos;view-image&amp;apos;, &amp;#123;    // 当被绑定的元素插入到 DOM 中时…">
+<meta name="keywords" content="Vue">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VUE通用指令、过滤器的封装和使用">
+<meta property="og:url" content="https://constantinel.github.io/2019/06/28/19062802/index.html">
+<meta property="og:site_name" content="蜀城走马的个人空间">
+<meta property="og:description" content="一、指令的封装1234567891011121314151617181920212223242526272829303132333435363738import Vue from &amp;apos;vue&amp;apos;;export const viewImage = Vue.directive(&amp;apos;view-image&amp;apos;, &amp;#123;    // 当被绑定的元素插入到 DOM 中时…">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://constantinel.github.io/2019/06/28/19062802/test.png">
+<meta property="og:updated_time" content="2019-06-28T08:35:45.112Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="VUE通用指令、过滤器的封装和使用">
+<meta name="twitter:description" content="一、指令的封装1234567891011121314151617181920212223242526272829303132333435363738import Vue from &amp;apos;vue&amp;apos;;export const viewImage = Vue.directive(&amp;apos;view-image&amp;apos;, &amp;#123;    // 当被绑定的元素插入到 DOM 中时…">
+<meta name="twitter:image" content="https://constantinel.github.io/2019/06/28/19062802/test.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://constantinel.github.io/2019/06/28/19062802/">
+
+
+
+
+
+  <title>VUE通用指令、过滤器的封装和使用 | 蜀城走马的个人空间</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">蜀城走马的个人空间</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-历史文章">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            历史文章
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://constantinel.github.io/2019/06/28/19062802/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content>
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="蜀城走马的个人空间">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">VUE通用指令、过滤器的封装和使用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-06-28T16:21:01+08:00">
+                2019-06-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="一、指令的封装"><a href="#一、指令的封装" class="headerlink" title="一、指令的封装"></a>一、指令的封装</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">import Vue from &apos;vue&apos;;</span><br><span class="line"></span><br><span class="line">export const viewImage = Vue.directive(&apos;view-image&apos;, &#123;</span><br><span class="line">    // 当被绑定的元素插入到 DOM 中时……</span><br><span class="line">    inserted: function (el) &#123;</span><br><span class="line">        el.style.cursor = &apos;pointer&apos;;</span><br><span class="line">        el.title = &apos;点击可查看大图&apos;;</span><br><span class="line"></span><br><span class="line">        // 图片</span><br><span class="line">        let img = document.createElement(&apos;img&apos;);</span><br><span class="line">        // 图片外壳</span><br><span class="line">        let imgBox = document.createElement(&apos;div&apos;);</span><br><span class="line">        // 这个查看图片包含框</span><br><span class="line">        let div = document.createElement(&apos;div&apos;);</span><br><span class="line">        let closeBox = document.createElement(&apos;span&apos;);</span><br><span class="line">        // 查看大图的关闭按钮</span><br><span class="line">        closeBox.innerText = &apos;×&apos;;</span><br><span class="line">        closeBox.className = &apos;close&apos;;</span><br><span class="line"></span><br><span class="line">        div.className = &apos;view-image-container&apos;;</span><br><span class="line">        imgBox.appendChild(img);</span><br><span class="line">        imgBox.appendChild(closeBox);</span><br><span class="line">        div.appendChild(imgBox);</span><br><span class="line">        div.style.visibility = &apos;hidden&apos;;</span><br><span class="line"></span><br><span class="line">        document.body.appendChild(div);</span><br><span class="line"></span><br><span class="line">        el.addEventListener(&apos;click&apos;, function () &#123;</span><br><span class="line">            img.src = el.src;</span><br><span class="line">            div.style.visibility = &apos;visible&apos;;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        // 点击关闭按钮隐藏查看大图</span><br><span class="line">        closeBox.addEventListener(&apos;click&apos;, function () &#123;</span><br><span class="line">            div.style.visibility = &apos;hidden&apos;;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>Vue2.0 中，代码复用和抽象的主要形式是组件。然而，有的情况下，你仍然需要对普通 DOM 元素进行底层操作，这时候就会用到自定义指令。上面是我写的一个查看大图的指令，主要应用场景是对使用图片标签展示的地方，有查看大图的需要，指令通过绑定指令v-view-image就可以实现点击查看大图的效果。</li>
+<li>inserted关键字是自定义指令中的钩子函数（<a href="https://cn.vuejs.org/v2/guide/custom-directive.html#%E9%92%A9%E5%AD%90%E5%87%BD%E6%95%B0" target="_blank" rel="noopener">点击此处查看钩子函数详解</a>），会在指令被绑定元素插入父节点时调用。钩子函数中的参数，可以查阅文档进行对应应用场景的使用。</li>
+<li>我在该自定义指令中，主要使用对el元素对象的操作，基本实现逻辑为 获取到被绑定元素的src图片路径，然后展示到查看大图元素中的图片路径。</li>
+<li>只需在main.js文件中对指令进行引入，例如 import { viewImage } from ‘./directive/view-image’ 就可以在全局正常使用，不需要再在单个组件中引入使用。具体使用方法例如：<img src="test.png" alt="测试图片" v-view-image>就可以使用。</li>
+</ol>
+<h2 id="二、过滤器的封装"><a href="#二、过滤器的封装" class="headerlink" title="二、过滤器的封装"></a>二、过滤器的封装</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Vue.filter(&apos;idToName&apos;, function(id, arr) &#123;</span><br><span class="line">  // 如果传入id为空，返回空字符串</span><br><span class="line">  if (!value) return &apos;&apos;;</span><br><span class="line">  // 如果基础数组数据为空或者未定义，直接返回id值</span><br><span class="line">  if (!arr || arr.length === 0) &#123;</span><br><span class="line">    return id;</span><br><span class="line">  &#125;</span><br><span class="line">  let name = &apos;&apos;;</span><br><span class="line">  arr.forEach(item =&gt; &#123;</span><br><span class="line">    // 获取到所属name，直接return跳出遍历</span><br><span class="line">    if (item.id === id) &#123;</span><br><span class="line">      return name = item.name;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  return name;</span><br><span class="line"></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>在vue项目中，会有常用场景需要对数据做处理，这时候就可以应用过滤器进行使用。推荐使用上述方法进行全局过滤器定义，相较于对组件内定义来说，优点是可以全局使用，避免重复代码，可以放在同一个文件夹中进行统一维护处理。</li>
+<li>上述过滤器是常用的对例如字典数据进行id转换为name的处理，需要传入的参数为id和数据源数组。具体使用方法为：<code>id | idToName(arr)</code>，需要提醒的一点是，v-model双向绑定指令不能使用过滤器。被过滤的值，会被当成默认的第一个参数传入，所以此处过滤器的传入参数只需一个参数arr。详细的过滤器使用及参数使用概念可以参考<a href="https://cn.vuejs.org/v2/guide/filters.html" target="_blank" rel="noopener">官方文档</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Vue/" rel="tag"># Vue</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/28/19062801/" rel="next" title="VUE的某些常见问题及解决方法">
+                <i class="fa fa-chevron-left"></i> VUE的某些常见问题及解决方法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/28/19062803/" rel="prev" title="使用element封装动态配置表格">
+                使用element封装动态配置表格 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description">在时光的雕刻下，人被凿去虚妄，磨出温润...</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、指令的封装"><span class="nav-number">1.</span> <span class="nav-text">一、指令的封装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、过滤器的封装"><span class="nav-number">2.</span> <span class="nav-text">二、过滤器的封装</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
