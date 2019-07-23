@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Vue,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="vue组件间通信的一些实用方法（VUE2.x）一、父子组件间通信 常用的父子组件通信方法，一般涉及props和$emit之间的交互，也就是我们在vue常说的属性传递和事件映射，实例如下：  123456789101112131415161718192021222324252627282930313233343536373839404142434445&amp;lt;template&amp;gt;    &amp;lt;">
+<meta name="keywords" content="Vue">
+<meta property="og:type" content="article">
+<meta property="og:title" content="vue组件间通信的一些实用方法（VUE2.x）">
+<meta property="og:url" content="https://constantinel.github.io/2019/07/23/190723/index.html">
+<meta property="og:site_name" content="蜀城走马的个人空间">
+<meta property="og:description" content="vue组件间通信的一些实用方法（VUE2.x）一、父子组件间通信 常用的父子组件通信方法，一般涉及props和$emit之间的交互，也就是我们在vue常说的属性传递和事件映射，实例如下：  123456789101112131415161718192021222324252627282930313233343536373839404142434445&amp;lt;template&amp;gt;    &amp;lt;">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-07-23T09:48:50.975Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="vue组件间通信的一些实用方法（VUE2.x）">
+<meta name="twitter:description" content="vue组件间通信的一些实用方法（VUE2.x）一、父子组件间通信 常用的父子组件通信方法，一般涉及props和$emit之间的交互，也就是我们在vue常说的属性传递和事件映射，实例如下：  123456789101112131415161718192021222324252627282930313233343536373839404142434445&amp;lt;template&amp;gt;    &amp;lt;">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://constantinel.github.io/2019/07/23/190723/">
+
+
+
+
+
+  <title>vue组件间通信的一些实用方法（VUE2.x） | 蜀城走马的个人空间</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">蜀城走马的个人空间</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-首页">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-历史文章">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            历史文章
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://constantinel.github.io/2019/07/23/190723/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content>
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="蜀城走马的个人空间">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">vue组件间通信的一些实用方法（VUE2.x）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-23T16:18:01+08:00">
+                2019-07-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="vue组件间通信的一些实用方法（VUE2-x）"><a href="#vue组件间通信的一些实用方法（VUE2-x）" class="headerlink" title="vue组件间通信的一些实用方法（VUE2.x）"></a>vue组件间通信的一些实用方法（VUE2.x）</h2><h3 id="一、父子组件间通信"><a href="#一、父子组件间通信" class="headerlink" title="一、父子组件间通信"></a>一、父子组件间通信</h3><ol>
+<li>常用的父子组件通信方法，一般涉及props和$emit之间的交互，也就是我们在vue常说的属性传递和事件映射，实例如下：</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"parent"</span>&gt;</span><br><span class="line">        &lt;child :message=<span class="string">"message"</span> @getReply=<span class="string">"getReply"</span>&gt;<span class="xml"><span class="tag">&lt;/<span class="name">child</span>&gt;</span></span></span><br><span class="line">    &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">&lt;/</span>template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    <span class="keyword">import</span> child <span class="keyword">from</span> <span class="string">'./child'</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">        name: <span class="string">'parent'</span>,</span><br><span class="line">        components:&#123;</span><br><span class="line">            child</span><br><span class="line">        &#125;,</span><br><span class="line">        data() &#123;</span><br><span class="line">            <span class="keyword">return</span> &#123;</span><br><span class="line">                message: <span class="string">'你好'</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        methods:&#123;</span><br><span class="line">            getReply(message)&#123;</span><br><span class="line">                <span class="built_in">console</span>.log(<span class="string">'子组件回复消息'</span>,message);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">&lt;template&gt;</span></span><br><span class="line"><span class="regexp">    &lt;div class="child"&gt;</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">    &lt;/</span>div&gt;</span><br><span class="line">&lt;<span class="regexp">/template&gt;</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">&lt;script&gt;</span></span><br><span class="line"><span class="regexp">    export default &#123;</span></span><br><span class="line"><span class="regexp">        name: 'child',</span></span><br><span class="line"><span class="regexp">        props:['message'],</span></span><br><span class="line"><span class="regexp">        mounted()&#123;</span></span><br><span class="line"><span class="regexp">            /</span><span class="regexp">/如果接收到父组件传递的消息，进行消息回复</span></span><br><span class="line"><span class="regexp">            if(this.props.message)&#123;</span></span><br><span class="line"><span class="regexp">                this.$emit('getReply','已收到消息');</span></span><br><span class="line"><span class="regexp">            &#125;</span></span><br><span class="line"><span class="regexp">        &#125;</span></span><br><span class="line"><span class="regexp">    &#125;</span></span><br><span class="line"><span class="regexp">&lt;/</span>script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>说明：上诉代码中，父组件和子组件在同一文件夹之下，父组件引用并使用了child子组件，并利用message传递给子组件一句“你好”。子组件在mounted生命周期获取属性message，如果获取到消息，利用”getReply”事件映射，告诉父组件已收到消息，父组件通过绑定事件的getReply方法进行接收。这就是一个常用的vue父子间通过属性和事件进行通信的过程。</p>
+<ol start="2">
+<li><p>子组件调用父组件的方法，父组件调用子组件的方法</p>
+<ul>
+<li><p>子组件调用父组件方法，常用的应用场景例如，父组件为一个表格组件，子组件是表单修改或保存的模态框组件，子组件填写表单完成后点击保存，请求成功后需要刷新表格组件。代码示例如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">&lt;!--父组件(表格组件)--&gt;</span><br><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"table"</span>&gt;</span><br><span class="line">        &lt;dialog&gt;<span class="xml"><span class="tag">&lt;/<span class="name">dialog</span>&gt;</span></span></span><br><span class="line">    &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">&lt;/</span>template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    <span class="keyword">import</span> dialog <span class="keyword">from</span> <span class="string">'./dialog'</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">        name: <span class="string">'table'</span>,</span><br><span class="line">        components:&#123;</span><br><span class="line">            dialog</span><br><span class="line">        &#125;,</span><br><span class="line">         provide() &#123;</span><br><span class="line">      		<span class="keyword">return</span> &#123;</span><br><span class="line">        		refreshTableData: <span class="keyword">this</span>.getData,</span><br><span class="line">      		&#125;</span><br><span class="line">    	&#125;,</span><br><span class="line">        methods:&#123;</span><br><span class="line">            getData()&#123;</span><br><span class="line">                <span class="comment">//表格获取请求数据的方法，由于只是简单的示例，所以就不写实际业务代码了</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">&lt;!--子组件(表单模态框)--&gt;</span></span><br><span class="line"><span class="regexp">&lt;template&gt;</span></span><br><span class="line"><span class="regexp">    &lt;div class="dialog"&gt;</span></span><br><span class="line"><span class="regexp">        &lt;!--子组件--&gt;</span></span><br><span class="line"><span class="regexp">        &lt;button @click="save"&gt;保存&lt;/</span>button&gt;</span><br><span class="line">    &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">&lt;/</span>template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    <span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">        name: <span class="string">'dialog'</span>,</span><br><span class="line">        inject: [<span class="string">'refreshTableData'</span>],</span><br><span class="line">        methods:&#123;</span><br><span class="line">            save()&#123;</span><br><span class="line">                <span class="comment">/*当针对表格进行新增或修改操作后，打开模态框针对表单填写完毕后进行保存</span></span><br><span class="line"><span class="comment">        		* 这时候通过异步请求数据保存成功后，需要父组件的表格数据刷新</span></span><br><span class="line"><span class="comment">        		* 就可通过父组件提供的refreshTableData方法进行操作</span></span><br><span class="line"><span class="comment">        		* */</span></span><br><span class="line">                <span class="keyword">this</span>.refreshTableData();</span><br><span class="line">            &#125;     </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>说明：通过provider和inject提供了子组件调用父组件的函数方法，不仅限于函数方法，也可通过此方法调用父组件的变量。</p>
+</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li><p>父组件调用子组件的方法和变量的方法相对简单，可通过ref获取子组件的实例进行调用，不过一般不建议这样使用，相对不太规范，但是也是一个可行性方案。代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div <span class="class"><span class="keyword">class</span></span>=<span class="string">"parent"</span>&gt;</span><br><span class="line">        &lt;child ref=<span class="string">"child"</span>&gt;<span class="xml"><span class="tag">&lt;/<span class="name">child</span>&gt;</span></span></span><br><span class="line">    &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">&lt;/</span>template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">    <span class="keyword">import</span> child <span class="keyword">from</span> <span class="string">'./child'</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">        name: <span class="string">'parent'</span>,</span><br><span class="line">        components:&#123;</span><br><span class="line">            child</span><br><span class="line">        &#125;,</span><br><span class="line">        methods:&#123;</span><br><span class="line">            useChildMethod()&#123;</span><br><span class="line">                <span class="keyword">this</span>.$refs.child.init();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&lt;<span class="regexp">/script&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>说明：假设子组件内部有一个init的初始化方法，可在父组件通过ref获取组件实例进行调用。</p>
+</li>
+</ul>
+<h3 id="二、全局组件间的通信"><a href="#二、全局组件间的通信" class="headerlink" title="二、全局组件间的通信"></a>二、全局组件间的通信</h3><ol>
+<li><p>利于vuex建立全局的数据共享</p>
+<p>全局通信一般的业务场景可能是功能菜单、面包屑、页面之间的联动操作，或者购物APP的购物车效果。我们简单举例购物车效果的实际应用。代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// shoppingBag.js文件</span></span><br><span class="line"><span class="keyword">const</span> shoppingBag = &#123;</span><br><span class="line">  state: &#123;</span><br><span class="line">    goods:[]</span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  mutations: &#123;</span><br><span class="line">    <span class="comment">// 设置一级菜单</span></span><br><span class="line">    SET_GOODS: <span class="function">(<span class="params">state, goods</span>) =&gt;</span> &#123;</span><br><span class="line">      state.goods = goods</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  actions: &#123;</span><br><span class="line">    setGoods(&#123;commit&#125;, goods) &#123;</span><br><span class="line">      commit(<span class="string">'SET_GOODS'</span>,goods)</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> shoppingBag</span><br></pre></td></tr></table></figure>
+
+<p>上面简单的作为一个购物车的store模块，里面定义了goods变量存放商品，提供了一个setGoods方法用于保存商品数据。由于只是举例演示，并没有书写真实的业务复杂代码。真实场景可能是设计商品名称、id、数量等信息，涉及购物车入库时的相关商品数据处理，这边不做赘述。</p>
+<p>为了在组件文件中使用goods变量，需要定义getters：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//新建一个getters.js文件，声明getters</span></span><br><span class="line"><span class="keyword">const</span> getters = &#123;</span><br><span class="line">  goods: <span class="function"><span class="params">state</span> =&gt;</span> state.shoppingBag.goods,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> getters</span><br></pre></td></tr></table></figure>
+
+<p>定义store的使用：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// store.js文件</span></span><br><span class="line"><span class="keyword">import</span> Vue <span class="keyword">from</span> <span class="string">'vue'</span></span><br><span class="line"><span class="keyword">import</span> Vuex <span class="keyword">from</span> <span class="string">'vuex'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> shoppingBag <span class="keyword">from</span> <span class="string">'./shoppingBag'</span></span><br><span class="line"><span class="keyword">import</span> getters <span class="keyword">from</span> <span class="string">'./getters'</span></span><br><span class="line"></span><br><span class="line">Vue.use(Vuex);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> store = <span class="keyword">new</span> Vuex.Store(&#123;</span><br><span class="line">  modules: &#123;</span><br><span class="line">    shoppingBag,</span><br><span class="line">  &#125;,</span><br><span class="line">  getters</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> store</span><br></pre></td></tr></table></figure>
+
+<p>然后在vue项目的入口文件中需要在vue实例中使用我们声明的store，示例如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Vue <span class="keyword">from</span> <span class="string">'vue'</span></span><br><span class="line"><span class="keyword">import</span> router <span class="keyword">from</span> <span class="string">'./router'</span></span><br><span class="line"><span class="keyword">import</span> store <span class="keyword">from</span> <span class="string">'./store'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  el: <span class="string">'#app'</span>,</span><br><span class="line">  router,</span><br><span class="line">  store,</span><br><span class="line">  template: <span class="string">'&lt;App/&gt;'</span>,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>然后我们就可以在全局任何一个组件中用mapGetters在计算属性中去获取goods变量并使用，通过store的dispatch方法去触发购物车的setGoods方法，更新购物车数据：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123;mapGetters&#125; <span class="keyword">from</span> <span class="string">'vuex'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">    name:<span class="string">'test-component'</span>,</span><br><span class="line">    computed: &#123;</span><br><span class="line">      ...mapGetters([</span><br><span class="line">        <span class="string">'goods'</span></span><br><span class="line">      ]),</span><br><span class="line">    &#125;,</span><br><span class="line">        methods:&#123;</span><br><span class="line">            <span class="comment">//更新购物车数据</span></span><br><span class="line">            updateGoods()&#123;</span><br><span class="line">                <span class="keyword">let</span> data = [];<span class="comment">//新的购物车数据</span></span><br><span class="line">                <span class="keyword">this</span>.$store.dispatch(<span class="string">'setGoods'</span>,data);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上就是通过vuex实现全局组件间数据通信的一个简单流程介绍。</p>
+</li>
+</ol>
+<ol start="2">
+<li><p>通过vue实例的事件映射和事件监听达到全局通信的效果：</p>
+<p>大家都知道父子组件通信时我们可以通过绑定事件监听，和子组件通过$emit事件映射，可以达到子组件到父组件的一个通信过程，利用这个方法，我们可以实现全局的一个事件的通信。示例如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在main.js入口文件中声明一个broadcast广播示例，绑定在vue的原型上方便我们全局使用</span></span><br><span class="line">Vue.prototype.$broadcast = <span class="keyword">new</span> Vue();</span><br><span class="line"></span><br><span class="line"><span class="comment">//在项目中示例一个发送广播的组件</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">    name:<span class="string">'send-message'</span>,</span><br><span class="line">    mounted()&#123;</span><br><span class="line">        <span class="comment">//在mounted生命周期发送一条广播</span></span><br><span class="line">        <span class="keyword">this</span>.$broadcast.$emit(<span class="string">'contact'</span>,<span class="string">'你好'</span>);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//在项目中示例一个发送广播的组件</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">    name:<span class="string">'get-message'</span>,</span><br><span class="line">    destroyed() &#123;</span><br><span class="line">      <span class="keyword">this</span>.$bus.$off(<span class="string">'contact'</span>, <span class="keyword">this</span>.getMessage);</span><br><span class="line">    &#125;,</span><br><span class="line">    mounted()&#123;</span><br><span class="line">        <span class="comment">//在mounted生命周期进行监听</span></span><br><span class="line">        <span class="keyword">this</span>.$broadcast.$on(<span class="string">'contact'</span>,<span class="keyword">this</span>.getMessage);</span><br><span class="line">    &#125;,</span><br><span class="line">    methods:&#123;</span><br><span class="line">        getMessage(message)&#123;</span><br><span class="line">            <span class="comment">//收到消息做相关的业务处理</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明：通过<code>$emit</code>发送广播事件时，进行相应监听的组件都会收到消息并触发绑定的函数方法。在这边，我在组件的destoryed生命周期对绑定函数进行了解绑，如果不解绑的话，由于事件队列相同事件名称的绑定函数是一个数组，就算组件被销毁，但是$broadcast这个实例未销毁，在上面绑定的事件函数就是冗余的，会影响js代码性能，所以在组件被销毁后需及时进行解绑，否则可能会造成一些不可预料的系统bug。（此处“broadcast”只是一个命名，大家可以根据自己需要进行命名，常用的命名方式可能使用“bus”。尽量不要使用broadcast，可能会与vue内置的一些属性方法冲突）</p>
+</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Vue/" rel="tag"># Vue</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/28/19062804/" rel="next" title="使用axios进行apiService的封装">
+                <i class="fa fa-chevron-left"></i> 使用axios进行apiService的封装
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description">在时光的雕刻下，人被凿去虚妄，磨出温润...</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#vue组件间通信的一些实用方法（VUE2-x）"><span class="nav-number">1.</span> <span class="nav-text">vue组件间通信的一些实用方法（VUE2.x）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一、父子组件间通信"><span class="nav-number">1.1.</span> <span class="nav-text">一、父子组件间通信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二、全局组件间的通信"><span class="nav-number">1.2.</span> <span class="nav-text">二、全局组件间的通信</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
